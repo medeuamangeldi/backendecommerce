@@ -56,6 +56,7 @@ export class UsersService {
         createdAt: true,
         updatedAt: true,
         profile: true,
+        role: true,
       },
     });
 

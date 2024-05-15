@@ -13,6 +13,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RoleGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
 
 @Controller('users')
 @ApiTags('users')
@@ -25,18 +27,24 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   async getAllUsers() {
     return await this.usersService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('USER')
+  @ApiBearerAuth()
   async getUserById(@Param('id') id: string) {
     return await this.usersService.findOne(+id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -45,6 +53,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async deleteUser(@Param('id') id: string) {
     return await this.usersService.remove(+id);
   }

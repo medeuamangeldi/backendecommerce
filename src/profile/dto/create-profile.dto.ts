@@ -17,8 +17,8 @@ export class CreateProfileDto {
   @ApiProperty()
   userId: number;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
   @ApiProperty()
-  avatarId: number;
+  avatarUrl: string;
 }

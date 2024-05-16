@@ -135,10 +135,11 @@ model DeliveryInfo {
   phoneNumber     String
   selfPick        Boolean  @default(false)
   postalCode      String?
-  city            String?
+  cityId          Int
+  city            City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
   deliveryAddress String?
   comment         String?
-  locationUrl     String?
+  pickupUrl       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -151,4 +152,13 @@ model LotteryTicket   {
   isWin       Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model City {
+  id            Int      @id @default(autoincrement())
+  name          String
+  pickupUrls    String[]
+  DeliveryInfo  DeliveryInfo[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

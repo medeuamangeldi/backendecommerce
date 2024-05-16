@@ -15,7 +15,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document);
-
+  const whitelist = ['http://localhost:3001', 'http://localhost:3000'];
+  app.enableCors({
+    origin: function (origin, callback) {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+  });
   await app.listen(3000);
 }
 bootstrap();

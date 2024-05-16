@@ -149,6 +149,7 @@ model LotteryTicket   {
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   combination String
+  gifts       String[]
   isWin       Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

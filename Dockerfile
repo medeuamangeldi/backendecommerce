@@ -10,7 +10,4 @@ COPY . .
 
 RUN npm run build
 
-CMD [ "npm", "run", "start" ]
-
-COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD [ "./docker-entrypoint.sh", "npm", "run", "start" ]

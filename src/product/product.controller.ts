@@ -35,6 +35,14 @@ import {
     async getAllProducts() {
     return await this.productService.findAll();
   }
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async getProductById(@Param('id') id: string) {
+      return await this.productService.getSingleProduct(+id);
+  }
+
     @Patch(':id')
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles('ADMIN')

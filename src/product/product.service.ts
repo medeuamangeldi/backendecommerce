@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -21,6 +21,27 @@ export class ProductService {
             throw new HttpException("error", 404, { cause: new Error("Error")});
         }
     }
+
+    async getSingleProduct(id: number) {
+        const product = await this.prisma.product.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            createdAt: true,
+            updatedAt: true,
+            models: true,
+            category: false,
+          },
+        });
+    
+        if (!product) {
+          throw new NotFoundException('Product not found');
+        }
+        return product;
+      }
+
     async update(id: number, data: UpdateProductDto) {
         try {
           return await this.prisma.product.update({

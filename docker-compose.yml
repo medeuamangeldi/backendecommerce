@@ -12,6 +12,8 @@ services:
       - postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+    networks:
+      - nesjs-network
   app:
     build:
       context: .
@@ -23,6 +25,8 @@ services:
       - postgres
     volumes:
       - ./src:/app/src
+    networks:
+      - nesjs-network
   nginx:
     image: nginx:stable-alpine
     container_name: nginx
@@ -41,3 +45,5 @@ services:
       - nesjs-network
 volumes:
   postgres:
+networks:
+    nesjs-network:

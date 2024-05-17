@@ -13,6 +13,8 @@ import {
   import { CategoryService } from './category.service';
   import { UpdateCategoryDto } from './dto/update-category.dto';
   import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+  import { Roles } from 'src/auth/roles/roles.decorator';
+  import { RoleGuard } from 'src/auth/roles.guard';
 
 
 @Controller('category')
@@ -21,33 +23,37 @@ export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
   @ApiBearerAuth()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
-  async getAllUsers() {
+  @Roles('ADMIN')
+  async getAllCategories() {
     return await this.categoryService.findAll();
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
+  @Roles('ADMIN')
   async update(
     @Param('id') id: string,
-    @Body() updateProfileDto: UpdateCategoryDto,
+    @Body() UpdateCategoryDto: UpdateCategoryDto,
   ) {
-    return await this.categoryService.update(+id, updateProfileDto);
+    return await this.categoryService.update(+id, UpdateCategoryDto);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
-  async deleteUser(@Param('id') id: string) {
+  @Roles('ADMIN')
+  async deleteCategory(@Param('id') id: string) {
     return await this.categoryService.remove(+id);
   }
 }

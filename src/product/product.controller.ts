@@ -13,6 +13,8 @@ import {
   import { ProductService } from './product.service';
   import { UpdateProductDto } from './dto/update-product.dto';
   import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+  import { RoleGuard } from 'src/auth/roles.guard';
+  import { Roles } from 'src/auth/roles/roles.decorator'; 
   
   @Controller('product')
   @ApiTags('product')
@@ -20,7 +22,8 @@ import {
     constructor(private productService: ProductService) {}
   
     @Post()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles('ADMIN')
     @ApiBearerAuth()
     async create(@Body() createProductDto: CreateProductDto) {
       return await this.productService.create(createProductDto);
@@ -29,11 +32,12 @@ import {
     @Get()
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    async getAllProduct() {
+    async getAllProducts() {
     return await this.productService.findAll();
   }
     @Patch(':id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles('ADMIN')
     @ApiBearerAuth()
     async update(
       @Param('id') id: string,
@@ -43,9 +47,10 @@ import {
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles('ADMIN')
     @ApiBearerAuth()
-    async deleteUser(@Param('id') id: string) {
+    async deleteProduct(@Param('id') id: string) {
     return await this.productService.remove(+id);
   }
-}  
+}

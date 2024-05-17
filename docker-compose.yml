@@ -8,6 +8,7 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
+    entrypoint: ["./docker-entrypoint.sh"]
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
@@ -24,7 +25,9 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./src:/app/src
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
     networks:
       - nesjs-network
   nginx:

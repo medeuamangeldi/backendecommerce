@@ -28,6 +28,7 @@ services:
     volumes:
       - ./app:/usr/src/app
       - /usr/src/app/node_modules
+      - /app/prisma
     restart: unless-stopped
     networks:
       - nesjs-network

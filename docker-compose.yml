@@ -8,7 +8,6 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
-    
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
@@ -24,12 +23,12 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - ./app:/usr/src/app
       - /usr/src/app/node_modules
       - /app/prisma
-    restart: unless-stopped
     networks:
       - nesjs-network
   nginx:

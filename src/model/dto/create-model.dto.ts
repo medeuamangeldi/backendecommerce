@@ -14,7 +14,6 @@ export class CreateModelDto {
     photoUrls?: string[];
 
     @IsNumber()
-    @IsOptional()
     @ApiProperty()
     price: number;
 
@@ -24,7 +23,6 @@ export class CreateModelDto {
     deal?: boolean;
 
     @IsNumber()
-    @IsOptional()
     @ApiProperty()
     productId: number;
 }

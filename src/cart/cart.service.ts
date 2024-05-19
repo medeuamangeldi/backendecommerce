@@ -7,14 +7,40 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 export class CartService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateCartDto) {
+  async create(dataItem: CreateCartDto, userId: number) {
     try {
-      return await this.prisma.cart.create({ data });
+      let data = {userId: userId}
+      let cartId = await this.prisma.cart.create({ data });
+      console.log(dataItem)
+
+      let cartItems = await Promise.all(dataItem.data.map(async(item) => {
+       await this.prisma.cartItem.create({
+        data: {
+          cartId: cartId.id, 
+          modelId: item.modelID, 
+          quantity: item.quantity
+        }
+      })
+    }));
+    await this.prisma.deliveryInfo.create({
+      data: {
+        cartId: cartId.id,
+        fullName: dataItem.address.username,
+        phoneNumber: dataItem.address.phone,
+        selfPick: dataItem.address.selfPick,
+        postalCode: dataItem.address.postalCode,
+        cityId: dataItem.address.cityId,
+        deliveryAddress: dataItem.address.deliveryAddress,
+        comment: dataItem.address.comment,
+        pickupUrl: dataItem.address.pickupUrl
+      }
+    })
+  
     } catch (error) {
       throw new HttpException(error, 404);
     }
   }
-  async getCartsByUser(userId: number) {
+  async findUserCart(userId: number) {
     try {
       return await this.prisma.cart.findUnique({
         where: { userId },
@@ -23,16 +49,9 @@ export class CartService {
       throw new HttpException(error, 404);
     }
   }
-  async getCart(id: number) {
+  async getCartById(id: number) {
     const cart = await this.prisma.cart.findUnique({
       where: { id },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        cartItems: true,
-        deliveryInfo: true,
-      },
     });
 
     if (!cart) {
@@ -41,16 +60,7 @@ export class CartService {
     return cart;
   }
 
-  async update(id: number, data: UpdateCartDto) {
-    try {
-      return await this.prisma.cart.update({
-        where: { id },
-        data,
-      });
-    } catch (error) {
-      throw new HttpException(error, 404);
-    }
-  }
+
   async remove(id: number) {
     try {
         return await this.prisma.cart.delete({

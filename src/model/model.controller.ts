@@ -34,7 +34,7 @@ export class ModelController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async getModelsByProduct(@Param('productId') productId: string) {
-    return await this.modelService.findByProductId(+productId)
+    return await this.modelService.findProductById(+productId)
   }
 
   @Patch(':id')

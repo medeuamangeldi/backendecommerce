@@ -26,7 +26,18 @@ export class ModelService {
         }
     }
 
-    async findByProductId(productId: number) {
+    async getModelById(id: number) {
+        const model = await this.prisma.model.findUnique({
+          where: { id },
+        });
+    
+        if (!model) {
+          throw new NotFoundException('Model not found');
+        }
+        return model;
+      }
+
+    async findProductById(productId: number) {
         const models = await this.prisma.model.findMany({
           where: { productId},
         });

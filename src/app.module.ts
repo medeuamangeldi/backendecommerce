@@ -8,6 +8,7 @@ import { ProfileModule } from './profile/profile.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { ConfigModule } from '@nestjs/config';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
     ProfileModule,
     CategoryModule,
     ProductModule,
+    FavoriteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

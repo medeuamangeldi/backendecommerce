@@ -14,6 +14,7 @@ export class ProfileService {
       throw new HttpException(error, 404);
     }
   }
+
   async findOneByUserId(userId: number) {
     try {
       return await this.prisma.profile.findUnique({

@@ -20,7 +20,7 @@ import {
     constructor(private readonly favoriteService: FavoriteService) {}
   
     @Post()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles('USER', 'ADMIN')
     @ApiBearerAuth()
     async create(@Body() createFavoriteDto: CreateFavoriteDto) {
@@ -28,15 +28,23 @@ import {
     }
   
     @Get()
-    @UseGuards(JwtAuthGuard)
-    @Roles('USER', 'ADMIN')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles('ADMIN')
     @ApiBearerAuth()
     async findAll() {
       return await this.favoriteService.findAll();
     }
   
+    @Get('user/:userId')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles('USER', 'ADMIN')
+    @ApiBearerAuth()
+    async findAllByUserId(@Param('userId') userId: string) {
+      return await this.favoriteService.findAllByUserId(+userId);
+    }
+  
     @Delete(':id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles('USER', 'ADMIN')
     @ApiBearerAuth()
     async remove(@Param('id') id: string) {

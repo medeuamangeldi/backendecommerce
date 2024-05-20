@@ -34,6 +34,20 @@ export class FavoriteService {
     }
   }
 
+  async findAllByUserId(userId: number) {
+    try {
+      return await this.prisma.favorite.findMany({
+        where: { userId },
+        include: {
+          model: true,
+        },
+      });
+    } catch (error) {
+      console.error('Error finding favorites for user:', error);
+      throw new InternalServerErrorException('Failed to find favorites for user');
+    }
+  }
+
   async remove(id: number) {
     try {
       return await this.prisma.favorite.delete({

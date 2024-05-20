@@ -80,7 +80,6 @@ model Product {
   categoryId  Int
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   models      Model[]
-  favorites   Favorite[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -121,8 +120,6 @@ model Favorite {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   modelId  Int
   model    Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
-  productId Int
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -37,6 +37,40 @@ export class CityService {
     return city;
   }
 
+  async addPickupUrls(id: number, pickupUrls: string[]) {
+    try {
+      const city = await this.prisma.city.findUnique({ where: { id } });
+      if (!city) {
+        throw new NotFoundException('City not found');
+      }
+      const updatedPickupUrls = [...city.pickupUrls, ...pickupUrls];
+      return await this.prisma.city.update({
+        where: { id },
+        data: { pickupUrls: updatedPickupUrls },
+      });
+    } catch (error) {
+      console.error('Error adding pickup URLs:', error);
+      throw new InternalServerErrorException('Failed to add pickup URLs');
+    }
+  }
+
+  async removePickupUrls(id: number, pickupUrls: string[]) {
+    try {
+      const city = await this.prisma.city.findUnique({ where: { id } });
+      if (!city) {
+        throw new NotFoundException('City not found');
+      }
+      const updatedPickupUrls = city.pickupUrls.filter(url => !pickupUrls.includes(url));
+      return await this.prisma.city.update({
+        where: { id },
+        data: { pickupUrls: updatedPickupUrls },
+      });
+    } catch (error) {
+      console.error('Error removing pickup URLs:', error);
+      throw new InternalServerErrorException('Failed to remove pickup URLs');
+    }
+  }
+
   async update(id: number, data: UpdateCityDto) {
     try {
       return await this.prisma.city.update({

@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
+import { CityModule } from './city/city.module';
 import { ConfigModule } from '@nestjs/config';
 import { FavoriteModule } from './favorite/favorite.module';
 
@@ -19,6 +20,7 @@ import { FavoriteModule } from './favorite/favorite.module';
     ProfileModule,
     CategoryModule,
     ProductModule,
+    CityModule,
     FavoriteModule,
   ],
   controllers: [AppController],

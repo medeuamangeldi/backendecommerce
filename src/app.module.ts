@@ -9,9 +9,11 @@ import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { ModelModule } from './model/model.module';
 import { OrderModule } from './order/order.module';
+import { CityModule } from './city/city.module';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
 import { TicketModule } from './ticket/ticket.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { TicketModule } from './ticket/ticket.module';
     CartModule,
     OrderModule,
     TicketModule,
+    CityModule,
+    FavoriteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

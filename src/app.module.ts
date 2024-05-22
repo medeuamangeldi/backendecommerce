@@ -8,8 +8,10 @@ import { ProfileModule } from './profile/profile.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { ModelModule } from './model/model.module';
+import { OrderModule } from './order/order.module';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CartModule } from './cart/cart.module';
     ProductModule,
     ModelModule,
     CartModule,
+    OrderModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

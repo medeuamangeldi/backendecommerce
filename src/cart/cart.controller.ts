@@ -9,7 +9,7 @@ import {
     Req,
   } from '@nestjs/common';
   import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-  import { CreateCartDto } from './dto/create-cart.dto';
+  import { CreateCartItemDto, CreateDeliveryInfo } from './dto/create-cart.dto';
   import { CartService } from './cart.service';
   import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
   import { Request } from 'express';
@@ -22,23 +22,25 @@ import {
     @Post()
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    async createCart(@Body() createCartDto: CreateCartDto, @Req() req: Request) {
+    async createCart(@Body() createCartItemDto: CreateCartItemDto, @Req() req: Request) {
       let userId = req.user["id"];
-      return await this.cartService.create(createCartDto, userId);
+      return await this.cartService.create(createCartItemDto, userId);
     }
 
-    @Get('/user/:userId')
+    @Post('delivery')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    async findUserCart(@Param('userId') userId: string) {
-    return await this.cartService.findUserCart(+userId);
-  }
+    async createDeliveryByCart(@Body() createDeliveryInfo: CreateDeliveryInfo, @Req() req: Request) {
+      let userId = req.user["id"];
+      return await this.cartService.createDeliveryByCart(createDeliveryInfo, userId);
+    }
 
-    @Get('/cart/:id')
+    @Get()
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    async getCartById(@Param('id') id: number) {
-      return await this.cartService.getCartById(+id);
+    async findUserCart(@Req() req: Request) {
+      let userId = req.user["id"];
+      return await this.cartService.findUserCart(userId);
   }
 
     @Delete(':id')

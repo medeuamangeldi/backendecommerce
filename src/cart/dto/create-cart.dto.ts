@@ -1,16 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsJSON, IsNumber, IsObject, IsOptional, IsString, ValidateNested} from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString} from 'class-validator';
 
-class DataItemDTO {
-    @IsNumber()
-    modelID: number;
   
-    @IsNumber()
-    quantity: number;
-  }
-  
-  class AddressDTO {
+export  class CreateDeliveryInfo {
     @IsString()
     username: string;
   
@@ -39,19 +31,14 @@ class DataItemDTO {
     @IsString()
     @IsOptional()
     pickupUrl: string;
-
   }
 
-export class CreateCartDto {
-    @IsArray()
-    @ValidateNested()
-    @Type(() => DataItemDTO)    
+export class CreateCartItemDto {
+    @IsNumber()
     @ApiProperty()
-    data: DataItemDTO[];
+    modelId: number;
 
-    @IsObject()
-    @ValidateNested()
-    @Type(() => AddressDTO)
+    @IsNumber()
     @ApiProperty()
-    address: AddressDTO;
+    quantity: number;
 }

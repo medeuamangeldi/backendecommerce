@@ -11,11 +11,10 @@ import {
   import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
   import { TicketService } from './ticket.service';
   import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-  import { Request } from 'express';
   import { Roles } from 'src/auth/roles/roles.decorator';
   import { RoleGuard } from 'src/auth/roles.guard';
   import { UpdateTicketDto } from './dto/update-ticket.dto';
-
+  import { InitTicketDto } from './dto/init-ticket.dto';
   
   @Controller('ticket')
   @ApiTags('ticket')
@@ -29,7 +28,7 @@ import {
     return await this.ticketService.GetLotteryTicket(+userId);
   }
 
-  @Patch('gift')
+  @Patch('prize')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
@@ -41,15 +40,15 @@ import {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async InitLotteryTicket(){
-    return await this.ticketService.InitLotteryTicket();
+  async InitLotteryTicket(@Body() initTicketDto: InitTicketDto){
+    return await this.ticketService.InitLotteryTicket(initTicketDto);
   }
 
   @Patch('reset')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async resetLotteryTicket(){
-    return await this.ticketService.ResetLotteryTicket();
+  async resetLotteryTicket(@Body() initTicketDto: InitTicketDto){
+    return await this.ticketService.ResetLotteryTicket(initTicketDto);
   }
 }

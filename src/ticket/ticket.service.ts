@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { PrizeService } from 'src/prize/prize.service';
 import { LotoDayService } from 'src/lotoday/lotoday.service';
+import { InitTicketDto } from './dto/init-ticket.dto';
 
 @Injectable()
 export class TicketService {
@@ -29,7 +30,10 @@ export class TicketService {
     try {
       const ticket = await this.prisma.lotteryTicket.findMany({
         where: { userId: userId },
-        select: { combination: true },
+        select: { 
+          userId: true,
+          combination: true,
+          isWin: true,},
       });
       return ticket;
     } catch (error) {
@@ -43,22 +47,24 @@ export class TicketService {
         where: { combination: updateTicketDto.combination },
         data: { isWin: true },
       });
-      const lotoDayId = await this.lotoDayService.getActive();
-      this.prizeService.CreatePrize(user.userId, lotoDayId.id, updateTicketDto);
+      return this.prizeService.CreatePrize(user.userId, updateTicketDto);
 
     } catch (error) {
       throw new HttpException(error, 500);
     }
   }
 
-  async InitLotteryTicket() {
+  async InitLotteryTicket(data: InitTicketDto) {
     try {
     console.log('Seeding database')
+    if (data.code !== process.env.JWT_SECRET) {
+      throw new HttpException('Invalid code', 400);
+    }
     const result = await this.prisma.$queryRaw`SELECT COUNT(id) FROM "LotteryTicket"`;
     const count = Number(result[0].count);
     if (count === 0) {
       console.log('inint lotteryticket table')
-      await this.prisma.$executeRaw`INSERT INTO "LotteryTicket" (combination) SELECT LPAD(generate_series::text, 2, '0') FROM generate_series(11,100)`;
+      await this.prisma.$executeRaw`INSERT INTO "LotteryTicket" (combination) SELECT LPAD(generate_series::text, 6, '0') FROM generate_series(0,999999)`;
   }else{
     throw new HttpException('LotteryTicket table already initialized', 400);
   }
@@ -66,8 +72,11 @@ export class TicketService {
     throw new HttpException(error, 500);
   }
 }
-  async ResetLotteryTicket() {
+  async ResetLotteryTicket(data: InitTicketDto) {
     try {
+      if (data.code !== process.env.CODE) {
+        throw new HttpException('Invalid code', 400);
+      }
       await this.prisma.lotteryTicket.updateMany({
         data: { userId: null, isWin: false },
       });

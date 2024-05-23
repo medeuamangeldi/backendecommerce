@@ -1,21 +1,20 @@
 import {
-    Body,
-    Controller,
-    Get,
-    Param,
-    Patch,
-    Post,
-    Delete,
-    UseGuards,
-  } from '@nestjs/common';
-  import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-  import { CreateCategoryDto } from './dto/create-category.dto';
-  import { CategoryService } from './category.service';
-  import { UpdateCategoryDto } from './dto/update-category.dto';
-  import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-  import { Roles } from 'src/auth/roles/roles.decorator';
-  import { RoleGuard } from 'src/auth/roles.guard';
-
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { CategoryService } from './category.service';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
+import { RoleGuard } from 'src/auth/roles.guard';
 
 @Controller('category')
 @ApiTags('category')
@@ -50,9 +49,9 @@ export class CategoryController {
   @Roles('ADMIN')
   async update(
     @Param('id') id: string,
-    @Body() UpdateCategoryDto: UpdateCategoryDto,
+    @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return await this.categoryService.update(+id, UpdateCategoryDto);
+    return await this.categoryService.update(+id, updateCategoryDto);
   }
 
   @Delete(':id')

@@ -15,4 +15,9 @@ export class CreateCategoryDto {
   @IsOptional()
   @ApiProperty()
   photoUrl: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  iconUrl: string;
 }

@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangeLanguageDto } from './dto/change-language.dto'; // Import the new DTO
 
 @Injectable()
 export class ProfileService {
@@ -30,6 +31,17 @@ export class ProfileService {
       return await this.prisma.profile.update({
         where: { id },
         data,
+      });
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
+
+  async changeLanguage(userId: number, language: ChangeLanguageDto) {
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data: { lang: language.language },
       });
     } catch (error) {
       throw new HttpException(error, 404);

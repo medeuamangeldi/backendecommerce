@@ -5,6 +5,7 @@ import {
     Req,
     Patch,
     Body,
+    Param,
     Post,
   } from '@nestjs/common';
   import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -21,12 +22,11 @@ import {
   export class TicketController {
     constructor(private ticketService: TicketService) {}
     
-  @Get()
+  @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getLotteryTicket(@Req() req: Request) {
-    let userId = req.user["id"];
-    return await this.ticketService.GetLotteryTicket(userId);
+  async getLotteryTicket(@Param('id') userId: string) {
+    return await this.ticketService.GetLotteryTicket(+userId);
   }
 
   @Patch('gift')

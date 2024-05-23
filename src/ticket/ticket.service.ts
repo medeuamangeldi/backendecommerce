@@ -44,7 +44,6 @@ export class TicketService {
         data: { isWin: true },
       });
       const lotoDayId = await this.lotoDayService.getActive();
-      console.log(lotoDayId);
       this.prizeService.CreatePrize(user.userId, lotoDayId.id, updateTicketDto);
 
     } catch (error) {

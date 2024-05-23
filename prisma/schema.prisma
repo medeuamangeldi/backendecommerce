@@ -66,6 +66,7 @@ model Cart {
   user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   cartItems       CartItem[]
   deliveryInfo    DeliveryInfo?
+  totalPrice      Float?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
@@ -74,9 +75,8 @@ model Order {
   id              Int      @id @default(autoincrement())
   cartItems       CartItem[]
   deliveryInfo    DeliveryInfo?
-  orderStatus     Status   @default(PROCESSING)
-  totalCost       Float
-  paid            Boolean  @default(false)
+  status          Status   @default(PROCESSING)
+  totalPrice      Float
   userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -90,6 +90,7 @@ model CartItem {
   modelId         Int
   model           Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
   quantity        Int
+  totalPrice      Float
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -180,7 +181,6 @@ model LotoDay {
   id          Int      @id @default(autoincrement())
   lotoDate    DateTime @unique
   prizes      Prize[]
-  isActive    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

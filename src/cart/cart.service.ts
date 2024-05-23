@@ -1,60 +1,27 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateCartItemDto, CreateDeliveryInfo } from './dto/create-cart.dto';
-import { CartItem } from '@prisma/client';
+import { CreateCartDto } from './dto/create-cart.dto';
+import { CartItemService } from 'src/cartitem/cartItem.service';
 
 @Injectable()
 export class CartService {
-  constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService,
+    private readonly cartItemService: CartItemService,
+  ) {}
 
-  async create(dataItem: CreateCartItemDto, userId: number) {
+  async create(createCartDto: CreateCartDto) {
     try {
+      let userId = createCartDto.userId;
       let cartId = await this.prisma.cart.findFirst({ where: { userId } });
       if (!cartId) {
         let data = {userId: userId}
         cartId = await this.prisma.cart.create({ data });
       }
-
-      let itemData: CartItem | null = await this.prisma.cartItem.findFirst({ where: { cartId: cartId.id, modelId: dataItem.modelId } });
-      if (itemData) {
-        let quantity = itemData["quantity"] + dataItem.quantity;
-        return await this.prisma.cartItem.update({
-          where: {id: itemData["id"]},
-          data: { quantity }
-        });
-      }else {
-      return await this.prisma.cartItem.create({
-        data: {
-          cartId: cartId.id, 
-          modelId: dataItem.modelId, 
-          quantity: dataItem.quantity
-        }
-      })
-    }
-    } catch (error) {
-      throw new HttpException(error, 404);
-    }
-  }
-
-  async createDeliveryByCart(dataItem: CreateDeliveryInfo, userId: number) {
-    try {
-      let cartId = await this.prisma.cart.findFirst({ where: { userId } });
-      if (!cartId) {
-        throw new HttpException("Cart not found", 404)
-      }
-    await this.prisma.deliveryInfo.create({
-      data: {
-        cartId: cartId.id,
-        fullName: dataItem.username,
-        phoneNumber: dataItem.phone,
-        selfPick: dataItem.selfPick,
-        postalCode: dataItem.postalCode,
-        cityId: dataItem.cityId,
-        deliveryAddress: dataItem.deliveryAddress,
-        comment: dataItem.comment,
-        pickupUrl: dataItem.pickupUrl
-      }
-    })
+      let cartItem = await this.cartItemService.create(cartId.id, createCartDto)
+      let totalPrice = cartItem.totalPrice + cartId.totalPrice
+      await this.prisma.cart.update({
+        where: {id: cartId.id}, 
+        data: {totalPrice: totalPrice}})
 
     } catch (error) {
       throw new HttpException(error, 404);
@@ -69,10 +36,7 @@ export class CartService {
       if (!currentCart) {
         return [];
       }
-      return await this.prisma.cartItem.findMany({
-        where: { cartId: currentCart.id },
-        include: { model: true },
-      });
+      return await this.cartItemService.findCartItemByCart(currentCart.id);
     } catch (error) {
       throw new HttpException(error, 404);
     }
@@ -88,14 +52,4 @@ export class CartService {
         throw new HttpException(error, 404);
     }
     }
-  async getCarItemtByUserId(id: number) {
-    try {
-      return await this.prisma.cartItem.findMany({
-        where: {cart: {userId: id}},
-            include: { model: true }
-      });
-    } catch (error) {
-      throw new HttpException(error, 404);
-    }
-  }
 }

@@ -10,14 +10,14 @@ export class LotoDayService {
 
   async getActive() {
     try {
-        return await this.prisma.lotoDay.findFirst({where: {isActive: true}, select: {id: true}});
+      // return await this.prisma.lotoDay.findFirst({where: {isActive: true}, select: {id: true}});
+        return await this.prisma.lotoDay.findFirst({select: {id: true}});
     } catch (error) {
       throw new HttpException(error, 500);
     }
   }
   async CreateLotoDay(data: CreateLotoDayDto) {
     try {
-      console.log(data);
       return await this.prisma.lotoDay.create({ data });
     } catch (error) {
       throw new HttpException(error, 500);

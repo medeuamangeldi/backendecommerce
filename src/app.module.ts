@@ -12,6 +12,8 @@ import { OrderModule } from './order/order.module';
 import { CityModule } from './city/city.module';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module';
+import { DeliverInfoModule } from './deliveryinfo/deliverInfo.module';
+import { CartItemModule } from './cartitem/cartItem.module';
 import { TicketModule } from './ticket/ticket.module';
 import { FavoriteModule } from './favorite/favorite.module';
 
@@ -30,6 +32,8 @@ import { FavoriteModule } from './favorite/favorite.module';
     TicketModule,
     CityModule,
     FavoriteModule,
+    CartItemModule,
+    DeliverInfoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

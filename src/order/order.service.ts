@@ -2,6 +2,7 @@ import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CartService } from 'src/cart/cart.service';
+import { CartItemService } from 'src/cartitem/cartItem.service';
 import { Order } from '@prisma/client';
 import { TicketService } from 'src/ticket/ticket.service';
 
@@ -11,11 +12,12 @@ export class OrderService {
     constructor(
         private prisma: PrismaService,
         private readonly cartService: CartService,
+        private readonly cartItemService: CartItemService,
         private readonly ticketService: TicketService,
     ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
     try {
-        let cart = await this.cartService.getCarItemtByUserId(userId)
+        let cart = await this.cartItemService.getCarItemtByUserId(userId)
         if (cart.length === 0){
             throw new HttpException('Cart is empty', HttpStatus.BAD_REQUEST);
         }
@@ -29,10 +31,9 @@ export class OrderService {
         let order: Order;
         if (payStatus.payStatus === true) {
             order = await this.prisma.order.create({data: {
-                totalCost: totalCartPrice,
+                totalPrice: totalCartPrice,
                 userId: userId,
-                paid: true,
-                orderStatus: "PROCESSING",
+                status: "PROCESSING",
             }});
             
             const countTicket = Math.floor(totalCartPriceDeal / this.ticketPrice);

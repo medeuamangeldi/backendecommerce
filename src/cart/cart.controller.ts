@@ -9,7 +9,7 @@ import {
     Req,
   } from '@nestjs/common';
   import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-  import { CreateCartItemDto, CreateDeliveryInfo } from './dto/create-cart.dto';
+  import { CreateCartDto } from './dto/create-cart.dto';
   import { CartService } from './cart.service';
   import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
   import { Request } from 'express';
@@ -22,17 +22,8 @@ import {
     @Post()
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    async createCart(@Body() createCartItemDto: CreateCartItemDto, @Req() req: Request) {
-      let userId = req.user["id"];
-      return await this.cartService.create(createCartItemDto, userId);
-    }
-
-    @Post('delivery')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    async createDeliveryByCart(@Body() createDeliveryInfo: CreateDeliveryInfo, @Req() req: Request) {
-      let userId = req.user["id"];
-      return await this.cartService.createDeliveryByCart(createDeliveryInfo, userId);
+    async createCart(@Body() createCartDto: CreateCartDto) {
+      return await this.cartService.create(createCartDto);
     }
 
     @Get()

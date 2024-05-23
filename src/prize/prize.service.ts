@@ -35,7 +35,6 @@ export class PrizeService {
   }
   async getAllPrizes() {
     try {
-      console.log("get all prizes");
       const ticket = await this.prisma.prize.findMany({
         select: { prizeName: true, userId: true},
       });

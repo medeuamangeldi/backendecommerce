@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
   
 export class CreateCartDto {
@@ -14,4 +14,8 @@ export class CreateCartDto {
     @IsNumber()
     @ApiProperty()
     quantity: number;
+
+    @IsNumber()
+    @IsOptional()
+    totalPrice: number;
 }

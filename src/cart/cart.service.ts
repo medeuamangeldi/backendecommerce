@@ -12,17 +12,42 @@ export class CartService {
   async create(createCartDto: CreateCartDto) {
     try {
       let userId = createCartDto.userId;
-      let cartId = await this.prisma.cart.findFirst({ where: { userId } });
-      if (!cartId) {
-        let data = {userId: userId}
-        cartId = await this.prisma.cart.create({ data });
-      }
-      let cartItem = await this.cartItemService.create(cartId.id, createCartDto)
-      let totalPrice = cartItem.totalPrice + cartId.totalPrice
-      await this.prisma.cart.update({
-        where: {id: cartId.id}, 
-        data: {totalPrice: totalPrice}})
+      let cart = await this.prisma.cart.findFirst({ where: { userId } });
+      if (!cart) {
 
+        let data = {userId: userId}
+        cart = await this.prisma.cart.create({ data });
+      }
+      let cartItem = await this.cartItemService.create(cart.id, createCartDto)
+      let totalPrice = cartItem.totalPrice + cart.totalPrice
+      await this.prisma.cart.update({
+        where: {id: cart.id}, 
+        data: {totalPrice: totalPrice}})
+      return await this.prisma.cart.findFirst({ 
+        where: { userId }, 
+        select: { 
+          id: true,
+          userId: true,
+          totalPrice: true,
+          cartItems: {
+            select: {
+              id: true,
+              quantity: true,
+              totalPrice: true,
+              model: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  deal: true,
+                  photoUrls: true
+                }
+              }
+            }
+          },
+          deliveryInfo: true,
+
+        }})
     } catch (error) {
       throw new HttpException(error, 404);
     }
@@ -30,13 +55,34 @@ export class CartService {
   
   async findUserCart(userId: number) {
     try {
-      let currentCart = await this.prisma.cart.findUnique({
-        where: { userId },
-      });
-      if (!currentCart) {
-        return [];
+      const cart = await this.prisma.cart.findUnique({
+        where: { userId }, select: {
+          id: true,
+          userId: true,
+          totalPrice: true,
+          cartItems: {
+            select: {
+              id: true,
+              quantity: true,
+              totalPrice: true,
+              model: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  deal: true,
+                  photoUrls: true
+                }
+              }
+            }
+          },
+          deliveryInfo: true,
+        }
+      })
+      if (!cart) {
+        throw new HttpException('Cart not found', 404);
       }
-      return await this.cartItemService.findCartItemByCart(currentCart.id);
+      return cart;
     } catch (error) {
       throw new HttpException(error, 404);
     }

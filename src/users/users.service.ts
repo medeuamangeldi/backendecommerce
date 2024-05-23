@@ -66,6 +66,27 @@ export class UsersService {
 
     return user;
   }
+  async getUserPrizes(id: number) {
+    console.log("tests");
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        phoneNumber: true,
+        secretCode: false,
+        password: false,
+        profile: false,
+        prizes: { select: { id: true, prizeName: true, userId: true, 
+          lotoDay: {select: {lotoDate:true}} } },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
 
   async update(id: number, data: UpdateUserDto) {
     try {

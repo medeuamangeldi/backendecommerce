@@ -5,6 +5,7 @@ import { CartService } from 'src/cart/cart.service';
 import { CartItemService } from 'src/cartitem/cartItem.service';
 import { Order } from '@prisma/client';
 import { TicketService } from 'src/ticket/ticket.service';
+import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 
 @Injectable()
 export class OrderService {
@@ -14,8 +15,14 @@ export class OrderService {
         private readonly cartService: CartService,
         private readonly cartItemService: CartItemService,
         private readonly ticketService: TicketService,
+        private readonly globalConfigService: GlobalConfigService,
     ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
+    let GC =  await this.globalConfigService.getIsBuyActive();
+    if (GC.isBuyActive === false) {
+        throw new HttpException('Buy is not active', HttpStatus.BAD_REQUEST);
+    }
+
     try {
         let cart = await this.cartItemService.getCarItemtByUserId(userId)
         if (cart.length === 0){
@@ -35,10 +42,13 @@ export class OrderService {
                 userId: userId,
                 status: "PROCESSING",
             }});
+            let GC =  await this.globalConfigService.getIsDealActive(); 
             
-            const countTicket = Math.floor(totalCartPriceDeal / this.ticketPrice);
-            let myTicket = await this.ticketService.CreateLotteryTicket(userId, countTicket); // Get lottery tickets
-            
+            if (GC.isDealActive === true) {
+                const countTicket = Math.floor(totalCartPriceDeal / this.ticketPrice);
+                await this.ticketService.CreateLotteryTicket(userId, countTicket); // Get lottery tickets
+            } 
+                
         }else {
             throw new HttpException("Payment failed", 400);
         }        

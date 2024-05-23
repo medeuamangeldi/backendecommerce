@@ -5,8 +5,4 @@ export class CreateLotoDayDto {
     @IsDateString()
     @ApiProperty()
     lotoDate: Date;
-
-    @IsBoolean()
-    @ApiProperty()
-    isActive: boolean
 }

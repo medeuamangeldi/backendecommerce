@@ -1,32 +1,37 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDeliveryInfoDto } from './dto/create-deliverinfo.dto';
+import { UpdateDeliveryInfoDto } from './dto/update-deliverinfo.dto';
 
 @Injectable()
 export class DeliveryInfoService {
   constructor(private prisma: PrismaService) {}
 
 
-  async createDeliveryByCart(createDeliveryInfoDto: CreateDeliveryInfoDto, userId: number) {
+  async createDeliveryByCart(data: CreateDeliveryInfoDto) {
     try {
-      let cartId = await this.prisma.cart.findFirst({ where: { userId } });
-      if (!cartId) {
-        throw new HttpException("Cart not found", 404)
-      }
-    await this.prisma.deliveryInfo.create({
-      data: {
-        cartId: cartId.id,
-        fullName: createDeliveryInfoDto.username,
-        phoneNumber: createDeliveryInfoDto.phone,
-        selfPick: createDeliveryInfoDto.selfPick,
-        postalCode: createDeliveryInfoDto.postalCode,
-        cityId: createDeliveryInfoDto.cityId,
-        deliveryAddress: createDeliveryInfoDto.deliveryAddress,
-        comment: createDeliveryInfoDto.comment,
-        pickupUrl: createDeliveryInfoDto.pickupUrl
-      }
-    })
+      return await this.prisma.deliveryInfo.create({ data })
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
 
+  async updateDeliveryInfo(id: number, data: UpdateDeliveryInfoDto) {
+    try {
+      return await this.prisma.deliveryInfo.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
+
+  async deleteDeliveryInfo(id: number) {
+    try {
+      return await this.prisma.deliveryInfo.delete({
+        where: { id },
+      });
     } catch (error) {
       throw new HttpException(error, 404);
     }

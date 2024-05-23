@@ -23,7 +23,7 @@ model User {
   profile     Profile?
   currentCart Cart?
   orders      Order[]
-  favorites   Favorites[]
+  favorites   Favorite[]
   prizes      Prize[]
   lotteryTickets LotteryTicket[]
   createdAt   DateTime  @default(now())
@@ -123,7 +123,7 @@ model Model {
   cartItems CartItem[]
   productId Int
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  favorites Favorites[]
+  favorites Favorite[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -138,7 +138,7 @@ model Category {
   updatedAt   DateTime @updatedAt
 }
 
-model Favorites {
+model Favorite {
   id        Int      @id @default(autoincrement())
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

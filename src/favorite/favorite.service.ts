@@ -9,7 +9,7 @@ export class FavoriteService {
   async create(data: CreateFavoriteDto) {
     try {
       const { userId, modelId } = data;
-      return await this.prisma.favorites.create({
+      return await this.prisma.favorite.create({
         data: {
           userId,
           modelId,
@@ -23,7 +23,7 @@ export class FavoriteService {
 
   async findAll() {
     try {
-      return await this.prisma.favorites.findMany({
+      return await this.prisma.favorite.findMany({
         include: {
           model: true,
         },
@@ -36,7 +36,7 @@ export class FavoriteService {
 
   async findAllByUserId(userId: number) {
     try {
-      return await this.prisma.favorites.findMany({
+      return await this.prisma.favorite.findMany({
         where: { userId },
         include: {
           model: true,
@@ -50,7 +50,7 @@ export class FavoriteService {
 
   async remove(id: number) {
     try {
-      return await this.prisma.favorites.delete({
+      return await this.prisma.favorite.delete({
         where: { id },
       });
     } catch (error) {

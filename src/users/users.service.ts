@@ -3,14 +3,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
+import { ProfileService } from 'src/profile/profile.service';
+import { CreateProfileDto } from 'src/profile/dto/create-profile.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly profileService: ProfileService,
+  ) {}
 
   async create(data: CreateUserDto) {
     try {
-      const user = await this.prisma.user.findUnique({
+      let user = await this.prisma.user.findUnique({
         where: { phoneNumber: data.phoneNumber },
       });
       if (user) {
@@ -26,7 +32,16 @@ export class UsersService {
       );
 
       data.password = hashedPassword;
-      return await this.prisma.user.create({ data });
+      user = await this.prisma.user.create({ data });
+      if (user?.id) {
+        await this.profileService.create({
+          userId: user.id,
+          firstName: '',
+          lastName: '',
+          avatarUrl: '',
+        });
+      }
+      return user;
     } catch (error) {
       throw new HttpException(error, 422);
     }
@@ -67,7 +82,6 @@ export class UsersService {
     return user;
   }
   async getUserPrizes(id: number) {
-    console.log("tests");
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
@@ -76,8 +90,14 @@ export class UsersService {
         secretCode: false,
         password: false,
         profile: false,
-        prizes: { select: { id: true, prizeName: true, userId: true, 
-          lotoDay: {select: {lotoDate:true}} } },
+        prizes: {
+          select: {
+            id: true,
+            prizeName: true,
+            userId: true,
+            lotoDay: { select: { lotoDate: true } },
+          },
+        },
       },
     });
 

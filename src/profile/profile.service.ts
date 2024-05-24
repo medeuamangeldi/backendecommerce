@@ -26,10 +26,10 @@ export class ProfileService {
     }
   }
 
-  async update(id: number, data: UpdateProfileDto) {
+  async update(data: UpdateProfileDto) {
     try {
       return await this.prisma.profile.update({
-        where: { id },
+        where: { userId: data?.userId },
         data,
       });
     } catch (error) {

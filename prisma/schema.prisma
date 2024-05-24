@@ -133,7 +133,7 @@ model Category {
   name        String
   description String
   products    Product[]
-  photoUrl    String
+  photoUrl    String?
   iconUrl     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -39,7 +39,6 @@ export class UsersController {
   @Roles('USER')
   @ApiBearerAuth()
   async getUserById(@Param('id') id: string) {
-    console.log(id);
     return await this.usersService.findOne(+id);
   }
 

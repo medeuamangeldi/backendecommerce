@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
@@ -60,7 +64,9 @@ export class CityService {
       if (!city) {
         throw new NotFoundException('City not found');
       }
-      const updatedPickupUrls = city.pickupUrls.filter(url => !pickupUrls.includes(url));
+      const updatedPickupUrls = city.pickupUrls.filter(
+        (url) => !pickupUrls.includes(url),
+      );
       return await this.prisma.city.update({
         where: { id },
         data: { pickupUrls: updatedPickupUrls },

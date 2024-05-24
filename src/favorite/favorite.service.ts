@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 
@@ -44,7 +48,9 @@ export class FavoriteService {
       });
     } catch (error) {
       console.error('Error finding favorites for user:', error);
-      throw new InternalServerErrorException('Failed to find favorites for user');
+      throw new InternalServerErrorException(
+        'Failed to find favorites for user',
+      );
     }
   }
 

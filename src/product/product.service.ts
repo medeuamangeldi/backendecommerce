@@ -48,6 +48,7 @@ export class ProductService {
         data,
       });
     } catch (error) {
+      console.log(error);
       throw new HttpException(error, 404);
     }
   }

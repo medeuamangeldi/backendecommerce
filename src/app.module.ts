@@ -16,6 +16,7 @@ import { DeliverInfoModule } from './deliveryinfo/deliverInfo.module';
 import { CartItemModule } from './cartitem/cartItem.module';
 import { TicketModule } from './ticket/ticket.module';
 import { FavoriteModule } from './favorite/favorite.module';
+import { MinioService } from './minio/minio.service';
 
 @Module({
   imports: [
@@ -36,6 +37,6 @@ import { FavoriteModule } from './favorite/favorite.module';
     DeliverInfoModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MinioService],
 })
 export class AppModule {}

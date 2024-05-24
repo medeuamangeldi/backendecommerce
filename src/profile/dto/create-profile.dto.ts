@@ -13,7 +13,6 @@ export class CreateProfileDto {
   lastName: string;
 
   @IsNumber()
-  @IsOptional()
   @ApiProperty()
   userId: number;
 

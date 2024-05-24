@@ -11,6 +11,7 @@ export class CategoryService {
     try {
       return await this.prisma.category.create({ data });
     } catch (error) {
+      console.log(error);
       throw new HttpException('error', 404, { cause: new Error('Error') });
     }
   }

@@ -39,7 +39,16 @@ export class UsersController {
   @Roles('USER')
   @ApiBearerAuth()
   async getUserById(@Param('id') id: string) {
+    console.log(id);
     return await this.usersService.findOne(+id);
+  }
+
+  @Get('prize/:id')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('USER', 'ADMIN')
+  @ApiBearerAuth()
+  async getUserPrizes(@Param('id') id: string) {
+    return await this.usersService.getUserPrizes(+id);
   }
 
   @Patch(':id')

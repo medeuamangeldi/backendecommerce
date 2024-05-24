@@ -22,7 +22,9 @@ model User {
   lang        Lang      @default(RU)
   profile     Profile?
   currentCart Cart?
+  orders      Order[]
   favorites   Favorite[]
+  prizes      Prize[]
   lotteryTickets LotteryTicket[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -37,6 +39,14 @@ enum Lang {
   EN
   RU
   KZ
+}
+
+enum Status {
+  PROCESSING // формируется
+  WAY        // в пути
+  PICKUP     // ожидает в пункте выдачи
+  DELIVERED  // получен
+  CANCELED   // отменен
 }
 
 model Profile {
@@ -56,19 +66,33 @@ model Cart {
   user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   cartItems       CartItem[]
   deliveryInfo    DeliveryInfo?
+  totalPrice      Float?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
 
+model Order {
+  id              Int      @id @default(autoincrement())
+  cartItems       CartItem[]
+  deliveryInfo    DeliveryInfo?
+  status          Status   @default(PROCESSING)
+  totalPrice      Float
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  cartId    Int
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  modelId   Int
-  model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  cartId          Int?
+  cart            Cart?     @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  orderId         Int?
+  order           Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  modelId         Int
+  model           Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  quantity        Int
+  totalPrice      Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Product {
@@ -126,8 +150,10 @@ model Favorite {
 
 model DeliveryInfo {
   id              Int      @id @default(autoincrement())
-  cartId          Int      @unique
-  cart            Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId          Int?     @unique
+  cart            Cart?    @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  orderId         Int?     @unique
+  order           Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   fullName        String
   phoneNumber     String
   selfPick        Boolean  @default(false)
@@ -143,11 +169,29 @@ model DeliveryInfo {
 
 model LotteryTicket   {
   id          Int      @id @default(autoincrement())
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  combination String   @unique
+  isWin       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+
+model LotoDay {
+  id          Int      @id @default(autoincrement())
+  lotoDate    DateTime @unique
+  prizes      Prize[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Prize {
+  id          Int      @id @default(autoincrement())
+  prizeName   String
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  combination String
-  gifts       String[]
-  isWin       Boolean  @default(false)
+  lotoDayId   Int
+  lotoDay     LotoDay  @relation(fields: [lotoDayId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -159,4 +203,12 @@ model City {
   DeliveryInfo  DeliveryInfo[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model GlobalConfig {
+  id            Int       @id @default(autoincrement())
+  isDealActive  Boolean   @default(false)
+  isBuyActive   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }

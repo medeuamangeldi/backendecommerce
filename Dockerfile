@@ -7,10 +7,12 @@ COPY prisma ./prisma/
 
 RUN npm i -g prisma
 
-RUN prisma generate
-
 RUN npm install
+
+RUN npx prisma generate
 
 COPY . .
 
 RUN npm run build
+
+CMD [  "npm", "run", "start:migrate:prod" ]

@@ -42,18 +42,34 @@ export class ModelService {
     return model;
   }
 
-  async getModels(deal: boolean) {
-    const models = await this.prisma.model.findMany({
-      where: {
-        deal,
-      },
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        deal: true,
-      },
-    });
+  async getModels(deal: boolean, all: boolean, productId: string) {
+    let models: any;
+    if (all) {
+      if (productId) {
+        models = await this.getModelsByProductId(+productId);
+      } else {
+        models = await this.prisma.model.findMany({
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            deal: true,
+          },
+        });
+      }
+    } else {
+      models = await this.prisma.model.findMany({
+        where: {
+          deal,
+        },
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          deal: true,
+        },
+      });
+    }
     return models;
   }
 
@@ -61,6 +77,12 @@ export class ModelService {
     const models = await this.prisma.model.findMany({
       where: {
         productId,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        deal: true,
       },
     });
     return models;

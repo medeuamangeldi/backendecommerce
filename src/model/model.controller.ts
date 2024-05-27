@@ -36,16 +36,17 @@ export class ModelController {
   }
 
   @Get()
-  @ApiQuery({ name: 'deal' })
-  async getAllModels(@Query('deal') deal = '0') {
-    const dealBool = deal === '1';
-    return await this.modelService.getModels(dealBool);
-  }
-
-  @Get()
+  @ApiQuery({ name: 'deal', enum: ['0', '1'] })
+  @ApiQuery({ name: 'all', enum: ['0', '1'] })
   @ApiQuery({ name: 'productId' })
-  async getModelsByProductId(@Query('productId') productId = '1') {
-    return await this.modelService.getModelsByProductId(+productId);
+  async getAllModels(
+    @Query('deal') deal = '0',
+    @Query('all') all = '1',
+    @Query('productId') productId: string,
+  ) {
+    const dealBool = deal === '1';
+    const allBool = all === '1';
+    return await this.modelService.getModels(dealBool, allBool, productId);
   }
 
   @Patch(':id')

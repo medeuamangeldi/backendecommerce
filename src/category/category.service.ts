@@ -38,7 +38,23 @@ export class CategoryService {
         iconUrl: true,
         createdAt: true,
         updatedAt: true,
-        products: true,
+        products: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            createdAt: true,
+            updatedAt: true,
+            models: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                deal: true,
+              },
+            },
+          },
+        },
       },
     });
 

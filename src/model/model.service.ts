@@ -28,6 +28,12 @@ export class ModelService {
   async getModelById(id: number) {
     const model = await this.prisma.model.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        deal: true,
+      },
     });
 
     if (!model) {
@@ -40,6 +46,12 @@ export class ModelService {
     const models = await this.prisma.model.findMany({
       where: {
         deal,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        deal: true,
       },
     });
     return models;

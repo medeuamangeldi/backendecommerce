@@ -45,6 +45,15 @@ export class ModelService {
     return models;
   }
 
+  async getModelsByProductId(productId: number) {
+    const models = await this.prisma.model.findMany({
+      where: {
+        productId,
+      },
+    });
+    return models;
+  }
+
   async remove(id: number) {
     try {
       return await this.prisma.model.delete({

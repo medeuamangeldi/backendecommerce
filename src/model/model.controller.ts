@@ -7,6 +7,7 @@ import {
   Post,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateModelDto } from './dto/create-model.dto';
@@ -30,18 +31,14 @@ export class ModelController {
   }
 
   @Get(':id')
-  async getModelsByProduct(@Param('id') id: string) {
+  async getModelById(@Param('id') id: string) {
     return await this.modelService.getModelById(+id);
   }
 
   @Get()
-  async getAllModels() {
-    return await this.modelService.getModels();
-  }
-
-  @Get('deal')
-  async getDealModels() {
-    return await this.modelService.getDealModels();
+  async getAllModels(@Query('deal') deal = '0') {
+    const dealBool = deal === '1';
+    return await this.modelService.getModels(dealBool);
   }
 
   @Patch(':id')

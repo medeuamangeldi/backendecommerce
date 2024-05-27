@@ -36,15 +36,10 @@ export class ModelService {
     return model;
   }
 
-  async getModels() {
-    const models = await this.prisma.model.findMany({});
-    return models;
-  }
-
-  async getDealModels() {
+  async getModels(deal: boolean) {
     const models = await this.prisma.model.findMany({
       where: {
-        deal: true,
+        deal,
       },
     });
     return models;

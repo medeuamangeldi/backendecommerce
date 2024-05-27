@@ -48,7 +48,12 @@ export class FavoriteService {
               name: true,
               price: true,
               deal: true,
-              product: true,
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
         },

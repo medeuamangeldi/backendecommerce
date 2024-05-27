@@ -39,6 +39,9 @@ export class FavoriteService {
       return await this.prisma.favorite.findMany({
         where: { userId },
         select: {
+          id: true,
+          userId: true,
+          modelId: true,
           model: {
             select: {
               id: true,

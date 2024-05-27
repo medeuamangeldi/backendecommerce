@@ -12,12 +12,8 @@ export class FavoriteService {
 
   async create(data: CreateFavoriteDto) {
     try {
-      const { userId, modelId } = data;
       return await this.prisma.favorite.create({
-        data: {
-          userId,
-          modelId,
-        },
+        data,
       });
     } catch (error) {
       console.error('Error creating favorite:', error);

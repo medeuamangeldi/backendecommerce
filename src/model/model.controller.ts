@@ -38,7 +38,7 @@ export class ModelController {
   @Get()
   @ApiQuery({ name: 'deal', enum: ['0', '1'] })
   @ApiQuery({ name: 'all', enum: ['0', '1'] })
-  @ApiQuery({ name: 'productId' })
+  @ApiQuery({ name: 'productId', required: false })
   async getAllModels(
     @Query('deal') deal = '0',
     @Query('all') all = '1',

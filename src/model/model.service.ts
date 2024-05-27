@@ -33,6 +33,12 @@ export class ModelService {
         name: true,
         price: true,
         deal: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 

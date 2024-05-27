@@ -9,7 +9,7 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateModelDto } from './dto/create-model.dto';
 import { ModelService } from './model.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -36,9 +36,16 @@ export class ModelController {
   }
 
   @Get()
+  @ApiQuery({ name: 'deal' })
   async getAllModels(@Query('deal') deal = '0') {
     const dealBool = deal === '1';
     return await this.modelService.getModels(dealBool);
+  }
+
+  @Get()
+  @ApiQuery({ name: 'productId' })
+  async getModelsByProductId(@Query('productId') productId = '1') {
+    return await this.modelService.getModelsByProductId(+productId);
   }
 
   @Patch(':id')

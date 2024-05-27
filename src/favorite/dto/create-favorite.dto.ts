@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateFavoriteDto {
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty()
   userId: number;
 

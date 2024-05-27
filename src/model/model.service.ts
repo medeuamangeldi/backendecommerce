@@ -36,14 +36,17 @@ export class ModelService {
     return model;
   }
 
-  async findProductById(productId: number) {
-    const models = await this.prisma.model.findMany({
-      where: { productId },
-    });
+  async getModels() {
+    const models = await this.prisma.model.findMany({});
+    return models;
+  }
 
-    if (!models) {
-      throw new NotFoundException('Models not found');
-    }
+  async getDealModels() {
+    const models = await this.prisma.model.findMany({
+      where: {
+        deal: true,
+      },
+    });
     return models;
   }
 

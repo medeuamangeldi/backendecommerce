@@ -31,15 +31,11 @@ export class CategoryController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   async getAllCategories() {
     return await this.categoryService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   async getCategoryById(@Param('id') id: string) {
     return await this.categoryService.findOne(+id);
   }

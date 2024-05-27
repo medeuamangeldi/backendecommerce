@@ -38,8 +38,16 @@ export class FavoriteService {
     try {
       return await this.prisma.favorite.findMany({
         where: { userId },
-        include: {
-          model: true,
+        select: {
+          model: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              deal: true,
+              product: true,
+            },
+          },
         },
       });
     } catch (error) {

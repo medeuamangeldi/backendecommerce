@@ -6,15 +6,17 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
+import { IsNumber } from 'class-validator';
 
 @Controller('users')
 @ApiTags('users')
@@ -29,9 +31,16 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
+  @ApiQuery({ name: 'search', required: false})
+  @ApiQuery({ name: 'dateFrom', required: false})
+  @ApiQuery({ name: 'dateTo', required: false})
   @ApiBearerAuth()
-  async getAllUsers() {
-    return await this.usersService.findAll();
+  async getUsers(@Query('search') search: string,
+                 @Query('dateFrom') dateFrom: Date,
+                 @Query('dateTo') dateTo: Date,
+                 @Query() {limit=10, skip=0}){  
+    const payload = {search, dateFrom, dateTo, limit, skip};
+    return await this.usersService.getUsers(payload);
   }
 
   @Get(':id')

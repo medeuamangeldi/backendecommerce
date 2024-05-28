@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -17,6 +18,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { IsNumber } from 'class-validator';
+import { Request } from 'express';
 
 @Controller('users')
 @ApiTags('users')
@@ -49,6 +51,14 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
   async getUserById(@Param('id') id: string) {
+    return await this.usersService.findOne(+id);
+  }
+
+  @Get('me/profile')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @ApiBearerAuth()
+  async getMe(@Req() req: Request) {
+    const id = req.user['id'];
     return await this.usersService.findOne(+id);
   }
 

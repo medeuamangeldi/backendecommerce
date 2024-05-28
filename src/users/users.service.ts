@@ -95,7 +95,14 @@ export class UsersService {
         password: false,
         createdAt: true,
         updatedAt: true,
-        profile: true,
+        profile: {
+          select: {
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            userId: true,
+          },
+        },
         role: true,
       },
     });

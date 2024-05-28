@@ -30,12 +30,18 @@ export class UsersService {
       );
 
       data.password = hashedPassword;
-      user = await this.prisma.user.create({ data });
+      user = await this.prisma.user.create({
+        data: {
+          phoneNumber: data.phoneNumber,
+          password: data.password,
+          secretCode: data.secretCode,
+        },
+      });
       if (user?.id) {
         await this.profileService.create({
           userId: user.id,
-          firstName: '',
-          lastName: '',
+          firstName: data?.firstName,
+          lastName: data?.lastName,
           avatarUrl: '',
         });
       }

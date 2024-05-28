@@ -42,7 +42,7 @@ export class ProfileController {
     return await this.profileService.findOneByUserId(+userId);
   }
 
-  @Patch(':id')
+  @Patch()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async update(@Body() updateProfileDto: UpdateProfileDto) {

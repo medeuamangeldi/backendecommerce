@@ -31,21 +31,22 @@ export class UsersController {
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
-  @ApiQuery({ name: 'search', required: false})
-  @ApiQuery({ name: 'dateFrom', required: false})
-  @ApiQuery({ name: 'dateTo', required: false})
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'dateFrom', required: false })
+  @ApiQuery({ name: 'dateTo', required: false })
   @ApiBearerAuth()
-  async getUsers(@Query('search') search: string,
-                 @Query('dateFrom') dateFrom: Date,
-                 @Query('dateTo') dateTo: Date,
-                 @Query() {limit=10, skip=0}){  
-    const payload = {search, dateFrom, dateTo, limit, skip};
+  async getUsers(
+    @Query('search') search: string,
+    @Query('dateFrom') dateFrom: Date,
+    @Query('dateTo') dateTo: Date,
+    @Query() { limit = 10, skip = 0 },
+  ) {
+    const payload = { search, dateFrom, dateTo, limit, skip };
     return await this.usersService.getUsers(payload);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('USER')
   @ApiBearerAuth()
   async getUserById(@Param('id') id: string) {
     return await this.usersService.findOne(+id);

@@ -54,7 +54,7 @@ export class UsersController {
     return await this.usersService.findOne(+id);
   }
 
-  @Get('me')
+  @Get('me/profile')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
   async getMe(@Req() req: Request) {

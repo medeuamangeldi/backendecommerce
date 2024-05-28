@@ -3,9 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
 import { ProfileService } from 'src/profile/profile.service';
-import { CreateProfileDto } from 'src/profile/dto/create-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -47,16 +45,32 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async getUsers(payload: {search: string, dateFrom: Date, dateTo: Date, limit: number, skip: number}) { 
+    const {search, dateFrom, dateTo, limit, skip} = payload;
     return await this.prisma.user.findMany({
+      where: {
+        OR: [
+          { phoneNumber: { contains: search } },
+          { profile: { firstName: { contains: search } } },
+          { profile: { lastName: { contains: search } } },
+        ],
+        AND: [
+          { createdAt: { gte: dateFrom } },
+          { createdAt: { lte: dateTo } },
+        ],
+      },
       select: {
         id: true,
+        profile: {select: {firstName: true, lastName: true}},
         phoneNumber: true,
         secretCode: false,
         password: false,
         createdAt: true,
         updatedAt: true,
+        _count: { select: { orders: true, lotteryTickets: true, prizes: true } },
       },
+      skip: +skip,
+      take: +limit,
     });
   }
 

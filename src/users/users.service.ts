@@ -30,12 +30,18 @@ export class UsersService {
       );
 
       data.password = hashedPassword;
-      user = await this.prisma.user.create({ data });
+      user = await this.prisma.user.create({
+        data: {
+          phoneNumber: data.phoneNumber,
+          password: data.password,
+          secretCode: data.secretCode,
+        },
+      });
       if (user?.id) {
         await this.profileService.create({
           userId: user.id,
-          firstName: '',
-          lastName: '',
+          firstName: data?.firstName,
+          lastName: data?.lastName,
           avatarUrl: '',
         });
       }
@@ -45,8 +51,14 @@ export class UsersService {
     }
   }
 
-  async getUsers(payload: {search: string, dateFrom: Date, dateTo: Date, limit: number, skip: number}) { 
-    const {search, dateFrom, dateTo, limit, skip} = payload;
+  async getUsers(payload: {
+    search: string;
+    dateFrom: Date;
+    dateTo: Date;
+    limit: number;
+    skip: number;
+  }) {
+    const { search, dateFrom, dateTo, limit, skip } = payload;
     return await this.prisma.user.findMany({
       where: {
         OR: [
@@ -54,20 +66,19 @@ export class UsersService {
           { profile: { firstName: { contains: search } } },
           { profile: { lastName: { contains: search } } },
         ],
-        AND: [
-          { createdAt: { gte: dateFrom } },
-          { createdAt: { lte: dateTo } },
-        ],
+        AND: [{ createdAt: { gte: dateFrom } }, { createdAt: { lte: dateTo } }],
       },
       select: {
         id: true,
-        profile: {select: {firstName: true, lastName: true}},
+        profile: { select: { firstName: true, lastName: true } },
         phoneNumber: true,
         secretCode: false,
         password: false,
         createdAt: true,
         updatedAt: true,
-        _count: { select: { orders: true, lotteryTickets: true, prizes: true } },
+        _count: {
+          select: { orders: true, lotteryTickets: true, prizes: true },
+        },
       },
       skip: +skip,
       take: +limit,

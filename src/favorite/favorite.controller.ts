@@ -31,7 +31,7 @@ export class FavoriteController {
     return await this.favoriteService.create(createFavoriteDto);
   }
 
-  @Get()
+  @Get('all')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
   async findAll() {

@@ -37,9 +37,10 @@ export class CartService {
             select: { cartItems: true },
           });
           console.log('cart after create cartItem: ', cart);
-          totalPrice = cart.cartItems.reduce((acc, item) => {
-            return acc + item.totalPrice;
-          });
+          totalPrice = cart.cartItems.reduce(
+            (acc, { totalPrice }) => acc + totalPrice,
+            0,
+          );
           console.log('totalPrice: ', totalPrice);
           cart = await this.prisma.cart.update({
             where: { id: cart.id },

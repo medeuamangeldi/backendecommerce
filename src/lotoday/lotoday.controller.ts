@@ -1,26 +1,25 @@
 import {
-    Controller,
-    UseGuards,
-    Body,
-    Post,
-    Get,
-    Patch,
-    Param,
-  } from '@nestjs/common';
-  import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-  import { LotoDayService } from './lotoday.service';
-  import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-  import { Roles } from 'src/auth/roles/roles.decorator';
-  import { RoleGuard } from 'src/auth/roles.guard';
-  import { CreateLotoDayDto } from './dto/create-lotoday.dto';
-  import { UpdateLotoDayDto } from './dto/update-lotoday.dto';
+  Controller,
+  UseGuards,
+  Body,
+  Post,
+  Get,
+  Patch,
+  Param,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { LotoDayService } from './lotoday.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
+import { RoleGuard } from 'src/auth/roles.guard';
+import { CreateLotoDayDto } from './dto/create-lotoday.dto';
+import { UpdateLotoDayDto } from './dto/update-lotoday.dto';
 
-  
-  @Controller('lotoday')
-  @ApiTags('lotoday')
-  export class LotoDayController {
-    constructor(private lotoDayService: LotoDayService) {}
-    
+@Controller('lotoday')
+@ApiTags('lotoday')
+export class LotoDayController {
+  constructor(private lotoDayService: LotoDayService) {}
+
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
@@ -29,11 +28,14 @@ import {
     return await this.lotoDayService.getAllLotoDay();
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async updateLotoDay(@Body() updateLotoDayDto: UpdateLotoDayDto, @Param('id') id: string){
+  async updateLotoDay(
+    @Body() updateLotoDayDto: UpdateLotoDayDto,
+    @Param('id') id: string,
+  ) {
     return await this.lotoDayService.updateLotoDay(+id, updateLotoDayDto);
   }
 
@@ -41,7 +43,7 @@ import {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async createLotoDay(@Body() createLotoDayDto: CreateLotoDayDto){
+  async createLotoDay(@Body() createLotoDayDto: CreateLotoDayDto) {
     return await this.lotoDayService.CreateLotoDay(createLotoDayDto);
   }
 }

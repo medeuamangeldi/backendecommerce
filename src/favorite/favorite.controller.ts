@@ -13,6 +13,7 @@ import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
 @Controller('favorite')
 @ApiTags('favorite')
@@ -22,8 +23,11 @@ export class FavoriteController {
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
-  async create(@Body() createFavoriteDto: CreateFavoriteDto, @Req() req: any) {
-    createFavoriteDto.userId = req.user.id;
+  async create(
+    @Body() createFavoriteDto: CreateFavoriteDto,
+    @Req() req: Request,
+  ) {
+    createFavoriteDto.userId = req.user['id'];
     return await this.favoriteService.create(createFavoriteDto);
   }
 
@@ -37,8 +41,8 @@ export class FavoriteController {
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
-  async findAllByUserId(@Req() req: any) {
-    const userId = req.user.id;
+  async findAllByUserId(@Req() req: Request) {
+    const userId = req.user['id'];
     return await this.favoriteService.findAllByUserId(+userId);
   }
 

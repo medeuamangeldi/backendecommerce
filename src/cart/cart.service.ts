@@ -14,9 +14,7 @@ export class CartService {
     try {
       const userId = createCartDto.userId;
       let cart: any = await this.prisma.cart.findFirst({ where: { userId } });
-      console.log('get cart: ', cart);
       if (!cart) {
-        console.log('no cart, create');
         const data = { userId: userId };
         cart = await this.prisma.cart
           .create({ data })
@@ -26,7 +24,6 @@ export class CartService {
           .catch((err) => {
             console.log('err: ', err);
           });
-        console.log('created cart: ', cart);
       }
       let totalPriceNew: any;
       await this.cartItemService
@@ -36,12 +33,10 @@ export class CartService {
             where: { userId },
             select: { cartItems: true, id: true, totalPrice: true },
           });
-          console.log('cart after create cartItem: ', cart);
           totalPriceNew = cart.cartItems.reduce(
             (acc, { totalPrice }) => acc + totalPrice,
             0,
           );
-          console.log('totalPrice: ', totalPriceNew);
           cart = await this.prisma.cart.update({
             where: { id: cart.id },
             data: { totalPrice: totalPriceNew },

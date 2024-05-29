@@ -17,18 +17,13 @@ export class CartItemService {
       const cartItem: CartItem | null = await this.prisma.cartItem.findFirst({
         where: { cartId: cartId, modelId: createCartDto.modelId },
       });
-      console.log('cartItem found: ', cartItem);
       const modelCart = await this.modelService.getModelById(
         createCartDto.modelId,
       );
 
-      console.log('modelCart found: ', modelCart);
-
       if (cartItem) {
         const quantity = cartItem['quantity'] + createCartDto.quantity;
-        console.log('quantity in cartItem: ', quantity);
         const totalPrice = modelCart.price * quantity;
-        console.log('totalPrice in cartItem: ', totalPrice);
         return await this.prisma.cartItem.update({
           where: { id: cartItem['id'] },
           data: { quantity, totalPrice },
@@ -116,10 +111,34 @@ export class CartItemService {
         where: { id: cartItem.cartId },
       });
 
-      await this.prisma.cart.update({
+      const cartUpdated = await this.prisma.cart.update({
         where: { id: cartItem.cartId },
         data: { totalPrice: cart.totalPrice - cartItem.totalPrice },
+        select: {
+          id: true,
+          userId: true,
+          totalPrice: true,
+          cartItems: {
+            select: {
+              id: true,
+              quantity: true,
+              totalPrice: true,
+              model: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  deal: true,
+                  photoUrls: true,
+                },
+              },
+            },
+          },
+          deliveryInfo: true,
+        },
       });
+
+      return cartUpdated;
     } catch (error) {
       throw new HttpException(error, 404);
     }

@@ -34,10 +34,11 @@ export class CartController {
     return await this.cartService.findUserCart(userId);
   }
 
-  @Delete(':id')
+  @Delete()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async deleteCart(@Param('id') id: string) {
-    return await this.cartService.remove(+id);
+  async deleteCart(@Req() req: Request) {
+    const userId = req.user['id'];
+    return await this.cartService.remove(+userId);
   }
 }

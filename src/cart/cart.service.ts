@@ -5,58 +5,69 @@ import { CartItemService } from 'src/cartitem/cartItem.service';
 
 @Injectable()
 export class CartService {
-    constructor(private prisma: PrismaService,
+  constructor(
+    private prisma: PrismaService,
     private readonly cartItemService: CartItemService,
   ) {}
 
   async create(createCartDto: CreateCartDto) {
     try {
-      let userId = createCartDto.userId;
-      let cart = await this.prisma.cart.findFirst({ where: { userId } });
+      const userId = createCartDto.userId;
+      let cart: any = await this.prisma.cart.findFirst({ where: { userId } });
       if (!cart) {
-
-        let data = {userId: userId}
+        const data = { userId: userId };
         cart = await this.prisma.cart.create({ data });
       }
-      let cartItem = await this.cartItemService.create(cart.id, createCartDto)
-      let totalPrice = cartItem.totalPrice + cart.totalPrice
-      await this.prisma.cart.update({
-        where: {id: cart.id}, 
-        data: {totalPrice: totalPrice}})
-      return await this.prisma.cart.findFirst({ 
-        where: { userId }, 
-        select: { 
-          id: true,
-          userId: true,
-          totalPrice: true,
-          cartItems: {
+      let totalPrice: any;
+      await this.cartItemService
+        .create(cart.id, createCartDto)
+        .then(async (res) => {
+          cart = await this.prisma.cart.findFirst({
+            where: { userId },
+            select: { cartItems: true },
+          });
+          totalPrice = cart.cartItems.reduce((acc, item) => {
+            return acc + item.totalPrice;
+          });
+          cart = await this.prisma.cart.update({
+            where: { id: cart.id },
+            data: { totalPrice: totalPrice },
             select: {
               id: true,
-              quantity: true,
+              userId: true,
               totalPrice: true,
-              model: {
+              cartItems: {
                 select: {
                   id: true,
-                  name: true,
-                  price: true,
-                  deal: true,
-                  photoUrls: true
-                }
-              }
-            }
-          },
-          deliveryInfo: true,
-
-        }})
+                  quantity: true,
+                  totalPrice: true,
+                  model: {
+                    select: {
+                      id: true,
+                      name: true,
+                      price: true,
+                      deal: true,
+                      photoUrls: true,
+                    },
+                  },
+                },
+              },
+              deliveryInfo: true,
+            },
+          });
+          return res;
+        });
+      return cart;
     } catch (error) {
       throw new HttpException(error, 404);
     }
   }
-  
+
   async findUserCart(userId: number) {
     try {
       const cart = await this.prisma.cart.findUnique({
-        where: { userId }, select: {
+        where: { userId },
+        select: {
           id: true,
           userId: true,
           totalPrice: true,
@@ -71,14 +82,14 @@ export class CartService {
                   name: true,
                   price: true,
                   deal: true,
-                  photoUrls: true
-                }
-              }
-            }
+                  photoUrls: true,
+                },
+              },
+            },
           },
           deliveryInfo: true,
-        }
-      })
+        },
+      });
       if (!cart) {
         throw new HttpException('Cart not found', 404);
       }
@@ -90,12 +101,12 @@ export class CartService {
 
   async remove(userId: number) {
     try {
-        return await this.prisma.cart.delete({
+      return await this.prisma.cart.delete({
         where: { userId: userId },
         select: { id: true },
-        });
+      });
     } catch (error) {
-        throw new HttpException(error, 404);
+      throw new HttpException(error, 404);
     }
-    }
+  }
 }

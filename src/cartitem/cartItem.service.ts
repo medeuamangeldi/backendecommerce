@@ -14,18 +14,18 @@ export class CartItemService {
 
   async create(cartId: number, createCartDto: CreateCartDto) {
     try {
-      const itemData: CartItem | null = await this.prisma.cartItem.findFirst({
+      const cartItem: CartItem | null = await this.prisma.cartItem.findFirst({
         where: { cartId: cartId, modelId: createCartDto.modelId },
       });
       const modelCart = await this.modelService.getModelById(
         createCartDto.modelId,
       );
 
-      if (itemData) {
-        const quantity = itemData['quantity'] + createCartDto.quantity;
+      if (cartItem) {
+        const quantity = cartItem['quantity'] + createCartDto.quantity;
         const totalPrice = modelCart.price * quantity;
         return await this.prisma.cartItem.update({
-          where: { id: itemData['id'] },
+          where: { id: cartItem['id'] },
           data: { quantity, totalPrice },
         });
       } else {

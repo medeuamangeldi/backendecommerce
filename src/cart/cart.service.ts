@@ -14,14 +14,24 @@ export class CartService {
     try {
       const userId = createCartDto.userId;
       let cart: any = await this.prisma.cart.findFirst({ where: { userId } });
+      console.log('get cart: ', cart);
       if (!cart) {
+        console.log('no cart, create');
         const data = { userId: userId };
-        cart = await this.prisma.cart.create({ data });
+        cart = await this.prisma.cart
+          .create({ data })
+          .then((res) => {
+            return res;
+          })
+          .catch((err) => {
+            console.log('err: ', err);
+          });
+        console.log('created cart: ', cart);
       }
       let totalPrice: any;
       await this.cartItemService
         .create(cart.id, createCartDto)
-        .then(async (res) => {
+        .then(async () => {
           cart = await this.prisma.cart.findFirst({
             where: { userId },
             select: { cartItems: true },
@@ -55,7 +65,6 @@ export class CartService {
               deliveryInfo: true,
             },
           });
-          return res;
         });
       return cart;
     } catch (error) {

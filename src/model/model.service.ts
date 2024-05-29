@@ -33,6 +33,8 @@ export class ModelService {
         name: true,
         price: true,
         deal: true,
+        photoUrls: true,
+        description: true,
         product: {
           select: {
             id: true,
@@ -60,6 +62,8 @@ export class ModelService {
             name: true,
             price: true,
             deal: true,
+            photoUrls: true,
+            description: true,
           },
         });
       }
@@ -73,6 +77,8 @@ export class ModelService {
           name: true,
           price: true,
           deal: true,
+          photoUrls: true,
+          description: true,
         },
       });
     }
@@ -89,6 +95,8 @@ export class ModelService {
         name: true,
         price: true,
         deal: true,
+        photoUrls: true,
+        description: true,
       },
     });
     return models;

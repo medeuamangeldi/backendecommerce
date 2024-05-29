@@ -1,28 +1,38 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsArray, IsNumber, IsBoolean} from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsArray,
+  IsNumber,
+  IsBoolean,
+} from 'class-validator';
 
 export class CreateModelDto {
+  @IsString()
+  @ApiProperty()
+  name: string;
 
-    @IsString()
-    @ApiProperty()
-    name: string;
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  @ApiProperty()
+  photoUrls?: string[];
 
-    @IsArray()
-    @IsOptional()
-    @IsString({ each: true })
-    @ApiProperty()
-    photoUrls?: string[];
+  @IsNumber()
+  @ApiProperty()
+  price: number;
 
-    @IsNumber()
-    @ApiProperty()
-    price: number;
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty()
+  deal?: boolean;
 
-    @IsBoolean()
-    @IsOptional()
-    @ApiProperty()
-    deal?: boolean;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  description?: string;
 
-    @IsNumber()
-    @ApiProperty()
-    productId: number;
+  @IsNumber()
+  @ApiProperty()
+  productId: number;
 }

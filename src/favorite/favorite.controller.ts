@@ -11,7 +11,6 @@ import {
 import { FavoriteService } from './favorite.service';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from 'src/auth/roles/roles.decorator';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -30,7 +29,6 @@ export class FavoriteController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('ADMIN')
   @ApiBearerAuth()
   async findAll() {
     return await this.favoriteService.findAll();

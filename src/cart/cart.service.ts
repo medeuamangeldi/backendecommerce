@@ -28,23 +28,23 @@ export class CartService {
           });
         console.log('created cart: ', cart);
       }
-      let totalPrice: any;
+      let totalPriceNew: any;
       await this.cartItemService
         .create(cart.id, createCartDto)
         .then(async () => {
           cart = await this.prisma.cart.findFirst({
             where: { userId },
-            select: { cartItems: true },
+            select: { cartItems: true, id: true, totalPrice: true },
           });
           console.log('cart after create cartItem: ', cart);
-          totalPrice = cart.cartItems.reduce(
+          totalPriceNew = cart.cartItems.reduce(
             (acc, { totalPrice }) => acc + totalPrice,
             0,
           );
-          console.log('totalPrice: ', totalPrice);
+          console.log('totalPrice: ', totalPriceNew);
           cart = await this.prisma.cart.update({
             where: { id: cart.id },
-            data: { totalPrice: totalPrice },
+            data: { totalPrice: totalPriceNew },
             select: {
               id: true,
               userId: true,

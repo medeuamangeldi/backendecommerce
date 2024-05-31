@@ -43,8 +43,6 @@ export class GlobalConfigController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiBearerAuth()
   async getGlobalConfig() {
     return await this.globalConfigService.getGC();
   }

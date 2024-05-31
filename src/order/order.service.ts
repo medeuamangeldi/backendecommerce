@@ -91,6 +91,7 @@ export class OrderService {
           deliveryInfo: true,
           createdAt: true,
           totalPrice: true,
+          status: true,
         },
         orderBy: { createdAt: 'desc' },
       });

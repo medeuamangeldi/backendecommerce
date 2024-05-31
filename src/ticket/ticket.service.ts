@@ -26,7 +26,7 @@ export class TicketService {
     }
   }
 
-  async GetLotteryTicket(userId: number) {
+  async GetLotteryTickets(userId: number) {
     try {
       const ticket = await this.prisma.lotteryTicket.findMany({
         where: { userId: userId },

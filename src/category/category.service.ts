@@ -32,7 +32,9 @@ export class CategoryService {
       where: { id },
       select: {
         id: true,
-        name: true,
+        nameKz: true,
+        nameEn: true,
+        nameRu: true,
         description: true,
         photoUrl: true,
         iconUrl: true,

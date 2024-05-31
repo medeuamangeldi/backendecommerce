@@ -1,15 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional} from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
 
-  
-export  class CreateGlobalConfigDto {
-    @IsBoolean()
-    @IsOptional()
-    @ApiProperty()
-    isDealActive: boolean;
+export class CreateGlobalConfigDto {
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty()
+  isDealActive: boolean;
 
-    @IsBoolean()
-    @IsOptional()
-    @ApiProperty()
-    isBuyActive: boolean;
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty()
+  isBuyActive: boolean;
+
+  @IsOptional()
+  @ApiProperty()
+  @IsNumber()
+  ticketPrice: number;
 }

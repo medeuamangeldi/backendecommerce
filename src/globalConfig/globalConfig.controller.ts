@@ -42,11 +42,10 @@ export class GlobalConfigController {
     return await this.globalConfigService.updateGC(+id, updateGlobalConfigDto);
   }
 
-  @Get(':id')
+  @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('ADMIN')
   @ApiBearerAuth()
-  async getGlobalConfig(@Param('id') id: string) {
-    return await this.globalConfigService.getGC(+id);
+  async getGlobalConfig() {
+    return await this.globalConfigService.getGC();
   }
 }

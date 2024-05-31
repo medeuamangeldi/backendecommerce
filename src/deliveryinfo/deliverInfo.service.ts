@@ -7,10 +7,19 @@ import { UpdateDeliveryInfoDto } from './dto/update-deliverinfo.dto';
 export class DeliveryInfoService {
   constructor(private prisma: PrismaService) {}
 
-
   async createDeliveryByCart(data: CreateDeliveryInfoDto) {
     try {
-      return await this.prisma.deliveryInfo.create({ data })
+      return await this.prisma.deliveryInfo.create({ data });
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
+
+  async getDeliveryInfoByCartId(cartId: number) {
+    try {
+      return await this.prisma.deliveryInfo.findFirst({
+        where: { cartId },
+      });
     } catch (error) {
       throw new HttpException(error, 404);
     }

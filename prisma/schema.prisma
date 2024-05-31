@@ -79,6 +79,8 @@ model Order {
   totalPrice      Float
   userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 }
 
 model CartItem {
@@ -131,7 +133,9 @@ model Model {
 
 model Category {
   id          Int      @id @default(autoincrement())
-  name        String
+  nameKz      String
+  nameRu      String
+  nameEn      String
   description String
   products    Product[]
   photoUrl    String?
@@ -201,7 +205,9 @@ model Prize {
 
 model City {
   id            Int      @id @default(autoincrement())
-  name          String
+  nameKz        String
+  nameRu        String
+  nameEn        String
   pickupUrls    String[]
   DeliveryInfo  DeliveryInfo[]
   createdAt     DateTime @default(now())
@@ -212,6 +218,7 @@ model GlobalConfig {
   id            Int       @id @default(autoincrement())
   isDealActive  Boolean   @default(false)
   isBuyActive   Boolean   @default(false)
+  ticketPrice   Float     @default(2000)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }

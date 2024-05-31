@@ -9,7 +9,6 @@ import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 
 @Injectable()
 export class OrderService {
-  readonly ticketPrice: number = 3000; // Price of a lottery ticket
   constructor(
     private prisma: PrismaService,
     private readonly cartService: CartService,
@@ -24,16 +23,16 @@ export class OrderService {
     }
 
     try {
-      const cart = await this.cartItemService.getCarItemtByUserId(userId);
-      if (cart.length === 0) {
+      const cartItems = await this.cartItemService.getCarItemtByUserId(userId);
+      if (cartItems.length === 0) {
         throw new HttpException('Cart is empty', HttpStatus.BAD_REQUEST);
       }
-      const totalCartPriceDeal = cart
+      const totalCartPriceDeal = cartItems
         .filter((item) => item.model.deal === true)
-        .reduce((sum, item) => sum + item.model.price * item.quantity, 0);
+        .reduce((sum, { totalPrice }) => sum + totalPrice, 0);
 
-      const totalCartPrice = cart.reduce(
-        (sum, item) => sum + item.model.price * item.quantity,
+      const totalCartPrice = cartItems.reduce(
+        (sum, { totalPrice }) => sum + totalPrice,
         0,
       );
 
@@ -49,7 +48,11 @@ export class OrderService {
         const GC = await this.globalConfigService.getIsDealActive();
 
         if (GC.isDealActive === true) {
-          const countTicket = Math.floor(totalCartPriceDeal / this.ticketPrice);
+          const ticketPriceData =
+            await this.globalConfigService.getTicketPrice();
+          const countTicket = Math.floor(
+            totalCartPriceDeal / ticketPriceData.ticketPrice,
+          );
           await this.ticketService.CreateLotteryTicket(userId, countTicket); // Get lottery tickets
         }
       } else {
@@ -77,14 +80,19 @@ export class OrderService {
     try {
       return await this.prisma.order.findMany({
         where: { userId: userId },
-        include: {
+        select: {
           cartItems: {
-            include: {
+            select: {
               model: true,
+              quantity: true,
+              totalPrice: true,
             },
           },
           deliveryInfo: true,
+          createdAt: true,
+          totalPrice: true,
         },
+        orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
       throw new HttpException(error, 500);

@@ -28,9 +28,13 @@ export class GlobalConfigService {
       data,
     });
   }
-  async getGC(id: number) {
-    const gc = await this.prisma.globalConfig.findUnique({
-      where: { id },
+  async getGC() {
+    const gc = await this.prisma.globalConfig.findFirst({
+      select: {
+        isDealActive: true,
+        isBuyActive: true,
+        ticketPrice: true,
+      },
     });
     if (!gc) {
       throw new NotFoundException('GlobalConfig not found');
@@ -51,6 +55,16 @@ export class GlobalConfigService {
   async getIsBuyActive() {
     const gc = await this.prisma.globalConfig.findFirst({
       select: { isBuyActive: true },
+    });
+    if (!gc) {
+      throw new NotFoundException('GlobalConfig not found');
+    }
+    return gc;
+  }
+
+  async getTicketPrice() {
+    const gc = await this.prisma.globalConfig.findFirst({
+      select: { ticketPrice: true },
     });
     if (!gc) {
       throw new NotFoundException('GlobalConfig not found');

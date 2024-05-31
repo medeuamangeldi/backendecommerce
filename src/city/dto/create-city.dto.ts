@@ -4,7 +4,15 @@ import { IsString, IsArray } from 'class-validator';
 export class CreateCityDto {
   @IsString()
   @ApiProperty()
-  name: string;
+  nameKz: string;
+
+  @IsString()
+  @ApiProperty()
+  nameRu: string;
+
+  @IsString()
+  @ApiProperty()
+  nameEn: string;
 
   @IsArray()
   @ApiProperty({ type: [String] })

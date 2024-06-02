@@ -74,11 +74,11 @@ export class TicketService {
   }
   async ResetLotteryTicket(data: InitTicketDto) {
     try {
-      if (data.code !== process.env.CODE) {
+      if (data.code !== process.env.JWT_SECRET) {
         throw new HttpException('Invalid code', 400);
       }
       await this.prisma.lotteryTicket.updateMany({
-        data: { userId: null, isWin: false },
+        data: { isWin: false },
       });
     } catch (error) {
       throw new HttpException(error, 500);

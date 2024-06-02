@@ -30,6 +30,7 @@ services:
       - /app/prisma
     networks:
       - nesjs-network
+    restart: unless-stopped
     environment:
       - DATABASE_HOST=postgres  # Use the service name for the hostname
       - DATABASE_PORT=5432
@@ -41,14 +42,29 @@ services:
     volumes:
       - ./nginx/templates:/etc/nginx/templates
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /tmp/acme-challenge:/tmp/acme-challenge
     environment:
       - NGINX_PORT=80
       - BACKEND_PORT=3000
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - app
       - postgres
+    networks:
+      - nesjs-network
+  letsencrypt:
+    container_name: certbot
+    image: certbot/certbot
+    command: sh -c "certbot certonly --webroot -w /tmp/acme-challenge/ -d iris-zoloto.kz --text --agree-tos --email medcod49@gmail.com --rsa-key-size 4096 --verbose --keep-until-expiring --preferred-challenges=http"
+    entrypoint: ""
+    volumes:
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - "/tmp/acme-challenge:/tmp/acme-challenge"
+    environment:
+      - TERM=xterm
     networks:
       - nesjs-network
   minio:

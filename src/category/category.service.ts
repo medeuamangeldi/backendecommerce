@@ -43,7 +43,9 @@ export class CategoryService {
         products: {
           select: {
             id: true,
-            name: true,
+            nameKz: true,
+            nameEn: true,
+            nameRu: true,
             description: true,
             createdAt: true,
             updatedAt: true,

@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Delete,
+  Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PrizeService } from './prize.service';
@@ -15,11 +16,23 @@ import { Request } from 'express';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
+import { CreatePrizeDto } from './dto/create-prize.dto';
 
 @Controller('prize')
 @ApiTags('prize')
 export class PrizeController {
   constructor(private prizeService: PrizeService) {}
+
+  @Post(':userId/addPrize')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async createPrize(
+    @Body() createPrizeDto: CreatePrizeDto,
+    @Param('userId') userId: string,
+  ) {
+    return await this.prizeService.CreatePrize(+userId, createPrizeDto);
+  }
 
   @Get()
   @UseGuards(JwtAuthGuard)

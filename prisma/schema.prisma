@@ -78,6 +78,7 @@ model Order {
   status          Status   @default(PROCESSING)
   totalPrice      Float
   userId          Int
+  trackingNumber  String?
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
@@ -99,7 +100,9 @@ model CartItem {
 
 model Product {
   id          Int      @id @default(autoincrement())
-  name        String
+  nameKz      String
+  nameRu      String
+  nameEn      String
   description String
   photoUrls   String[]
   currency    Currency @default(KZT)
@@ -122,7 +125,12 @@ model Model {
   photoUrls String[]
   price     Float
   deal      Boolean  @default(false)
-  description String?
+  descriptionKz String?
+  descriptionRu String?
+  descriptionEn String?
+  detailedDescriptionKz String?
+  detailedDescriptionRu String?
+  detailedDescriptionEn String?
   cartItems CartItem[]
   productId Int
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)

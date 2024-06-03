@@ -30,12 +30,20 @@ export class TicketController {
     return await this.ticketService.GetLotteryTickets(+userId);
   }
 
-  @Patch('prize')
+  @Patch('win')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async updateLotteryTicket(@Body() updateTicketDto: UpdateTicketDto) {
-    return await this.ticketService.UpdateLotteryTicket(updateTicketDto);
+  async updateLotteryTicketWin(@Body() updateTicketDto: UpdateTicketDto) {
+    return await this.ticketService.UpdateLotteryTicketWin(updateTicketDto);
+  }
+
+  @Patch('loss')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async updateLotteryTicketLoss(@Body() updateTicketDto: UpdateTicketDto) {
+    return await this.ticketService.UpdateLotteryTicketLoss(updateTicketDto);
   }
 
   @Post('init')

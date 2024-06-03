@@ -8,7 +8,13 @@ import { TicketModule } from 'src/ticket/ticket.module';
 import { GlobalConfigModule } from 'src/globalConfig/globalConfig.module';
 
 @Module({
-  imports: [PrismaModule, CartModule, TicketModule, CartItemModule, GlobalConfigModule],
+  imports: [
+    PrismaModule,
+    CartModule,
+    TicketModule,
+    CartItemModule,
+    GlobalConfigModule,
+  ],
   providers: [OrderService],
   controllers: [OrderController],
 })

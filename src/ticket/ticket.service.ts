@@ -42,13 +42,25 @@ export class TicketService {
     }
   }
 
-  async UpdateLotteryTicket(updateTicketDto: UpdateTicketDto) {
+  async UpdateLotteryTicketWin(updateTicketDto: UpdateTicketDto) {
     try {
-      const user = await this.prisma.lotteryTicket.update({
+      const ticket = await this.prisma.lotteryTicket.update({
         where: { combination: updateTicketDto.combination },
         data: { isWin: true },
       });
-      return this.prizeService.CreatePrize(user.userId, updateTicketDto);
+      return ticket;
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
+
+  async UpdateLotteryTicketLoss(updateTicketDto: UpdateTicketDto) {
+    try {
+      const ticket = await this.prisma.lotteryTicket.update({
+        where: { combination: updateTicketDto.combination },
+        data: { isWin: false },
+      });
+      return ticket;
     } catch (error) {
       throw new HttpException(error, 500);
     }

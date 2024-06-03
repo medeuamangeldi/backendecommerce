@@ -6,6 +6,7 @@ import { CartItemService } from 'src/cartitem/cartItem.service';
 import { Order } from '@prisma/client';
 import { TicketService } from 'src/ticket/ticket.service';
 import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
+import { OrderStatus } from './dto/update-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -99,6 +100,28 @@ export class OrderService {
           status: true,
         },
         orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
+
+  async addTrackingNumber(orderId: number, trackingNumber: string) {
+    try {
+      return await this.prisma.order.update({
+        where: { id: orderId },
+        data: { trackingNumber: trackingNumber },
+      });
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
+
+  async updateStatus(orderId: number, status: OrderStatus) {
+    try {
+      return await this.prisma.order.update({
+        where: { id: orderId },
+        data: { status: status },
       });
     } catch (error) {
       throw new HttpException(error, 500);

@@ -4,7 +4,15 @@ import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 export class CreateProductDto {
   @IsString()
   @ApiProperty()
-  name: string;
+  nameKz: string;
+
+  @IsString()
+  @ApiProperty()
+  nameRu: string;
+
+  @IsString()
+  @ApiProperty()
+  nameEn: string;
 
   @IsString()
   @IsOptional()

@@ -51,7 +51,9 @@ export class FavoriteService {
               product: {
                 select: {
                   id: true,
-                  name: true,
+                  nameKz: true,
+                  nameEn: true,
+                  nameRu: true,
                 },
               },
             },

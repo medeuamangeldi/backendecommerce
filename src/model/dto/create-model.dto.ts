@@ -30,7 +30,32 @@ export class CreateModelDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  description?: string;
+  descriptionRu?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  descriptionKz?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  descriptionEn?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  detailedDescriptionRu?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  detailedDescriptionKz?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  detailedDescriptionEn?: string;
 
   @IsNumber()
   @ApiProperty()

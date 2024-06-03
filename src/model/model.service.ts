@@ -34,11 +34,18 @@ export class ModelService {
         price: true,
         deal: true,
         photoUrls: true,
-        description: true,
+        descriptionKz: true,
+        descriptionEn: true,
+        descriptionRu: true,
+        detailedDescriptionEn: true,
+        detailedDescriptionKz: true,
+        detailedDescriptionRu: true,
         product: {
           select: {
             id: true,
-            name: true,
+            nameKz: true,
+            nameEn: true,
+            nameRu: true,
           },
         },
       },
@@ -63,7 +70,12 @@ export class ModelService {
             price: true,
             deal: true,
             photoUrls: true,
-            description: true,
+            descriptionKz: true,
+            descriptionEn: true,
+            descriptionRu: true,
+            detailedDescriptionEn: true,
+            detailedDescriptionKz: true,
+            detailedDescriptionRu: true,
           },
         });
       }
@@ -78,7 +90,12 @@ export class ModelService {
           price: true,
           deal: true,
           photoUrls: true,
-          description: true,
+          descriptionKz: true,
+          descriptionEn: true,
+          descriptionRu: true,
+          detailedDescriptionEn: true,
+          detailedDescriptionKz: true,
+          detailedDescriptionRu: true,
         },
       });
     }
@@ -96,7 +113,12 @@ export class ModelService {
         price: true,
         deal: true,
         photoUrls: true,
-        description: true,
+        descriptionKz: true,
+        descriptionEn: true,
+        descriptionRu: true,
+        detailedDescriptionEn: true,
+        detailedDescriptionKz: true,
+        detailedDescriptionRu: true,
       },
     });
     return models;

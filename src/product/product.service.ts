@@ -26,7 +26,9 @@ export class ProductService {
       where: { id },
       select: {
         id: true,
-        name: true,
+        nameKz: true,
+        nameEn: true,
+        nameRu: true,
         description: true,
         createdAt: true,
         updatedAt: true,

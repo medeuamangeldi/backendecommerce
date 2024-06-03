@@ -76,6 +76,9 @@ export class UsersService {
         password: false,
         createdAt: true,
         updatedAt: true,
+        prizes: true,
+        orders: true,
+        lotteryTickets: true,
         _count: {
           select: { orders: true, lotteryTickets: true, prizes: true },
         },

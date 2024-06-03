@@ -81,8 +81,13 @@ export class OrderService {
       return await this.prisma.order.findMany({
         where: { userId: userId },
         select: {
+          id: true,
+          userId: true,
+          user: true,
+          trackingNumber: true,
           cartItems: {
             select: {
+              id: true,
               model: true,
               quantity: true,
               totalPrice: true,

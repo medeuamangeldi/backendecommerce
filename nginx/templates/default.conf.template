@@ -43,10 +43,6 @@ server {
         allow all;
         root /var/www/acme;
     }
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
 }
 
 server {

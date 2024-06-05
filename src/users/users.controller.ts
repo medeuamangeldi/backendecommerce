@@ -80,6 +80,22 @@ export class UsersController {
     return await this.usersService.update(+id, updateUserDto);
   }
 
+  @Patch(':id/activate')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @ApiBearerAuth()
+  @Roles('ADMIN')
+  async activateUser(@Param('id') id: string) {
+    return await this.usersService.activateUser(+id);
+  }
+
+  @Patch(':id/deactivate')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @ApiBearerAuth()
+  @Roles('ADMIN')
+  async deactivateUser(@Param('id') id: string) {
+    return await this.usersService.deactivateUser(+id);
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

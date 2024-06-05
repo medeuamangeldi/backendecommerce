@@ -26,6 +26,7 @@ model User {
   favorites   Favorite[]
   prizes      Prize[]
   lotteryTickets LotteryTicket[]
+  isActive   Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -125,6 +126,7 @@ model Model {
   photoUrls String[]
   price     Float
   deal      Boolean  @default(false)
+  inStockCount Int
   descriptionKz String?
   descriptionRu String?
   descriptionEn String?
@@ -227,6 +229,7 @@ model GlobalConfig {
   isDealActive  Boolean   @default(false)
   isBuyActive   Boolean   @default(false)
   ticketPrice   Float     @default(2000)
+  ofertaUrl     String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }

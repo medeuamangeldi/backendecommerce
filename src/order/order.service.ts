@@ -1,4 +1,9 @@
-import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  HttpStatus,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CartService } from 'src/cart/cart.service';
@@ -7,6 +12,7 @@ import { Order } from '@prisma/client';
 import { TicketService } from 'src/ticket/ticket.service';
 import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 import { OrderStatus } from './dto/update-order.dto';
+import { ModelService } from 'src/model/model.service';
 
 @Injectable()
 export class OrderService {
@@ -16,11 +22,12 @@ export class OrderService {
     private readonly cartItemService: CartItemService,
     private readonly ticketService: TicketService,
     private readonly globalConfigService: GlobalConfigService,
+    private readonly modelService: ModelService,
   ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
     const GC = await this.globalConfigService.getIsBuyActive();
     if (GC.isBuyActive === false) {
-      throw new HttpException('Buy is not active', HttpStatus.BAD_REQUEST);
+      throw new ForbiddenException('Buying is not active');
     }
 
     try {
@@ -39,13 +46,28 @@ export class OrderService {
 
       let order: Order;
       if (payStatus.payStatus === true) {
-        order = await this.prisma.order.create({
-          data: {
-            totalPrice: totalCartPrice,
-            userId: userId,
-            status: 'PROCESSING',
-          },
-        });
+        order = await this.prisma.order
+          .create({
+            data: {
+              totalPrice: totalCartPrice,
+              userId: userId,
+              status: 'PROCESSING',
+            },
+          })
+          .then((order) => {
+            const decrementedStocks = cartItems.map(async (cartItem: any) => {
+              const model = await this.modelService.getModelById(
+                cartItem.modelId,
+              );
+              console.log('Model: ', model);
+              return await this.modelService.decrementStockCount(
+                cartItem.modelId,
+                cartItem.quantity,
+              );
+            });
+            console.log('decrementedStocks: ', decrementedStocks);
+            return order;
+          });
         const GC = await this.globalConfigService.getIsDealActive();
 
         if (GC.isDealActive === true) {

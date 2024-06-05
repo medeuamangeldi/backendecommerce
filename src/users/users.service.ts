@@ -178,4 +178,26 @@ export class UsersService {
       throw new HttpException(error, 404);
     }
   }
+
+  async activateUser(id: number) {
+    try {
+      return await this.prisma.user.update({
+        where: { id },
+        data: { isActive: true },
+      });
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
+
+  async deactivateUser(id: number) {
+    try {
+      return await this.prisma.user.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
 }

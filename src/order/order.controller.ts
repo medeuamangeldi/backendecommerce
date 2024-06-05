@@ -34,13 +34,12 @@ export class OrderController {
     return await this.orderService.create(createOrderDto, userId);
   }
 
-  @Get()
+  @Get(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async getOrders(@Req() req: Request) {
-    const userId = req.user['id'];
-    return await this.orderService.getOrders(userId);
+  async getOrders(@Param('id') userId: string) {
+    return await this.orderService.getOrders(+userId);
   }
 
   @Patch(':id/trackingNumber')

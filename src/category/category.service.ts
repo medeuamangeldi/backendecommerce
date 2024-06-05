@@ -55,6 +55,7 @@ export class CategoryService {
                 name: true,
                 price: true,
                 deal: true,
+                photoUrls: true,
               },
             },
           },

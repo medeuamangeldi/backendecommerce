@@ -26,7 +26,6 @@ export class CategoryController {
   @Roles('ADMIN')
   @ApiBearerAuth()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
-    console.log('createCategoryDto', createCategoryDto);
     return await this.categoryService.create(createCategoryDto);
   }
 

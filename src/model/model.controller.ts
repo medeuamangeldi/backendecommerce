@@ -129,8 +129,7 @@ export class ModelController {
     @Param('photoUrl') photoUrl: string,
   ) {
     const modelId = +id;
-    const deletedFile = await this.minioService.deleteFile(photoUrl);
-    console.log('deletedFile', deletedFile);
+    await this.minioService.deleteFile(photoUrl);
     const removedPhotoModel = await this.modelService.deletePhotoUrl(
       modelId,
       photoUrl,

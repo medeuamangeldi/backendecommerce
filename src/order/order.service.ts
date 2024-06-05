@@ -55,17 +55,12 @@ export class OrderService {
             },
           })
           .then((order) => {
-            const decrementedStocks = cartItems.map(async (cartItem: any) => {
-              const model = await this.modelService.getModelById(
-                cartItem.modelId,
-              );
-              console.log('Model: ', model);
-              return await this.modelService.decrementStockCount(
+            cartItems.forEach(async (cartItem: any) => {
+              await this.modelService.decrementStockCount(
                 cartItem.modelId,
                 cartItem.quantity,
               );
             });
-            console.log('decrementedStocks: ', decrementedStocks);
             return order;
           });
         const GC = await this.globalConfigService.getIsDealActive();

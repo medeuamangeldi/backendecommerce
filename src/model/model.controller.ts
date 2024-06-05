@@ -8,19 +8,32 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateModelDto } from './dto/create-model.dto';
 import { ModelService } from './model.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { UpdateModelDto } from './dto/update-model.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MinioService } from 'src/minio/minio.service';
 
 @Controller('model')
 @ApiTags('model')
 export class ModelController {
-  constructor(private modelService: ModelService) {}
+  constructor(
+    private modelService: ModelService,
+    private readonly minioService: MinioService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard)
@@ -58,6 +71,79 @@ export class ModelController {
     @Body() updateModelDto: UpdateModelDto,
   ) {
     return await this.modelService.update(+id, updateModelDto);
+  }
+
+  @Patch(':id/incrementStock')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @ApiBearerAuth()
+  @Roles('ADMIN')
+  async incrementStock(@Param('id') id: string, @Body('stock') stock: number) {
+    return await this.modelService.incrementStockCount(+id, stock);
+  }
+
+  @Patch(':id/decrementStock')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @ApiBearerAuth()
+  @Roles('ADMIN')
+  async decrementStock(@Param('id') id: string, @Body('stock') stock: number) {
+    return await this.modelService.decrementStockCount(+id, stock);
+  }
+
+  @Post(':id/addPhoto')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: string,
+  ) {
+    await this.minioService.createBucketIfNotExists();
+    const modelId = +id;
+    const fileName = await this.minioService.uploadFile(file);
+    const photoAddedModel = await this.modelService.addPhotoUrl(
+      modelId,
+      fileName,
+    );
+    return photoAddedModel;
+  }
+
+  @Post(':id/removePhoto/:photoUrl')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async removeFile(
+    @Param('id') id: string,
+    @Param('photoUrl') photoUrl: string,
+  ) {
+    const modelId = +id;
+    const deletedFile = await this.minioService.deleteFile(photoUrl);
+    console.log('deletedFile', deletedFile);
+    const removedPhotoModel = await this.modelService.deletePhotoUrl(
+      modelId,
+      photoUrl,
+    );
+
+    return removedPhotoModel;
+  }
+
+  @Get('modelPhoto/:fileName')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getFileUrl(@Param('fileName') fileName: string) {
+    return await this.minioService.getFileUrl(fileName);
   }
 
   @Delete(':id')

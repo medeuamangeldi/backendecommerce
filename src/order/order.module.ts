@@ -6,6 +6,7 @@ import { CartModule } from 'src/cart/cart.module';
 import { CartItemModule } from 'src/cartitem/cartItem.module';
 import { TicketModule } from 'src/ticket/ticket.module';
 import { GlobalConfigModule } from 'src/globalConfig/globalConfig.module';
+import { ModelModule } from 'src/model/model.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { GlobalConfigModule } from 'src/globalConfig/globalConfig.module';
     TicketModule,
     CartItemModule,
     GlobalConfigModule,
+    ModelModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],

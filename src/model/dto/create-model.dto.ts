@@ -60,4 +60,8 @@ export class CreateModelDto {
   @IsNumber()
   @ApiProperty()
   productId: number;
+
+  @IsNumber()
+  @ApiProperty()
+  inStockCount: number;
 }

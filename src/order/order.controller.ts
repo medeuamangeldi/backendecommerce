@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  Delete,
   Post,
   UseGuards,
   Req,
@@ -34,11 +33,19 @@ export class OrderController {
     return await this.orderService.create(createOrderDto, userId);
   }
 
-  @Get(':id')
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getMyOrders(@Req() req: Request) {
+    const userId = req.user['id'];
+    return await this.orderService.getOrders(+userId);
+  }
+
+  @Get(':userId/user')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async getOrders(@Param('id') userId: string) {
+  async getOrders(@Param('userId') userId: string) {
     return await this.orderService.getOrders(+userId);
   }
 

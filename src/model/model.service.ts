@@ -40,6 +40,7 @@ export class ModelService {
         detailedDescriptionEn: true,
         detailedDescriptionKz: true,
         detailedDescriptionRu: true,
+        inStockCount: true,
         product: {
           select: {
             id: true,
@@ -76,6 +77,7 @@ export class ModelService {
             detailedDescriptionEn: true,
             detailedDescriptionKz: true,
             detailedDescriptionRu: true,
+            inStockCount: true,
           },
         });
       }
@@ -96,6 +98,7 @@ export class ModelService {
           detailedDescriptionEn: true,
           detailedDescriptionKz: true,
           detailedDescriptionRu: true,
+          inStockCount: true,
         },
       });
     }
@@ -119,9 +122,77 @@ export class ModelService {
         detailedDescriptionEn: true,
         detailedDescriptionKz: true,
         detailedDescriptionRu: true,
+        inStockCount: true,
       },
     });
     return models;
+  }
+
+  async decrementStockCount(modelId: number, count: number) {
+    try {
+      return await this.prisma.model.update({
+        where: { id: modelId },
+        data: {
+          inStockCount: {
+            decrement: count,
+          },
+        },
+      });
+    } catch (error) {
+      throw new HttpException('error', 404, { cause: new Error('Error') });
+    }
+  }
+
+  async incrementStockCount(modelId: number, count: number) {
+    try {
+      return await this.prisma.model.update({
+        where: { id: modelId },
+        data: {
+          inStockCount: {
+            increment: count,
+          },
+        },
+      });
+    } catch (error) {
+      throw new HttpException('error', 404, { cause: new Error('Error') });
+    }
+  }
+
+  async addPhotoUrl(modelId: number, photoUrl: string) {
+    try {
+      return await this.prisma.model.update({
+        where: { id: modelId },
+        data: {
+          photoUrls: {
+            push: photoUrl,
+          },
+        },
+      });
+    } catch (error) {
+      throw new HttpException('error', 404, { cause: new Error('Error') });
+    }
+  }
+
+  async deletePhotoUrl(modelId: number, photoUrl: string) {
+    try {
+      const model = await this.prisma.model.findUnique({
+        where: { id: modelId },
+        select: {
+          photoUrls: true,
+        },
+      });
+      const oldPhotoUrls = model.photoUrls;
+      return await this.prisma.model.update({
+        where: { id: modelId },
+        data: {
+          photoUrls: {
+            set: oldPhotoUrls.filter((url) => url !== photoUrl),
+          },
+        },
+      });
+    } catch (error) {
+      throw new HttpException('error', 404, { cause: new Error('Error') });
+    }
   }
 
   async remove(id: number) {

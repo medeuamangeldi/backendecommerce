@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateGlobalConfigDto {
   @IsBoolean()
@@ -16,4 +16,9 @@ export class CreateGlobalConfigDto {
   @ApiProperty()
   @IsNumber()
   ticketPrice: number;
+
+  @IsOptional()
+  @ApiProperty()
+  @IsString()
+  ofertaUrl: string;
 }

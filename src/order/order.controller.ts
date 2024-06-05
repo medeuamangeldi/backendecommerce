@@ -41,11 +41,11 @@ export class OrderController {
     return await this.orderService.getOrders(+userId);
   }
 
-  @Get(':id')
+  @Get(':userId/user')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
-  async getOrders(@Param('id') userId: string) {
+  async getOrders(@Param('userId') userId: string) {
     return await this.orderService.getOrders(+userId);
   }
 

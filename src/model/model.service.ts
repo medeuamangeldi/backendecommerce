@@ -77,6 +77,22 @@ export class ModelService {
             detailedDescriptionEn: true,
             detailedDescriptionKz: true,
             detailedDescriptionRu: true,
+            product: {
+              select: {
+                id: true,
+                nameKz: true,
+                nameEn: true,
+                nameRu: true,
+                category: {
+                  select: {
+                    id: true,
+                    nameKz: true,
+                    nameEn: true,
+                    nameRu: true,
+                  },
+                },
+              },
+            },
             inStockCount: true,
           },
         });

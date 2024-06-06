@@ -90,7 +90,7 @@ export class TicketService {
         throw new HttpException('Invalid code', 400);
       }
       await this.prisma.lotteryTicket.updateMany({
-        data: { isWin: false },
+        data: { isWin: false, userId: null },
       });
     } catch (error) {
       throw new HttpException(error, 500);

@@ -7,8 +7,9 @@ import {
   UseGuards,
   Req,
   Patch,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -47,6 +48,27 @@ export class OrderController {
   @ApiBearerAuth()
   async getOrders(@Param('userId') userId: string) {
     return await this.orderService.getOrders(+userId);
+  }
+
+  @Get('/all')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'dateFrom', required: false })
+  @ApiQuery({ name: 'dateTo', required: false })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'city', required: false })
+  @ApiBearerAuth()
+  async getAllOrders(
+    @Query('search') search: string,
+    @Query('dateFrom') dateFrom: Date,
+    @Query('dateTo') dateTo: Date,
+    @Query('status') status: string,
+    @Query('city') city: string,
+    @Query() { limit = 10, skip = 0 },
+  ) {
+    const payload = { search, dateFrom, dateTo, status, city, limit, skip };
+    return await this.orderService.getAllOrders(payload);
   }
 
   @Patch(':id/trackingNumber')

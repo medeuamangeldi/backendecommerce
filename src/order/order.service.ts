@@ -123,6 +123,64 @@ export class OrderService {
     }
   }
 
+  async getAllOrders(payload: any) {
+    try {
+      const { search, dateFrom, dateTo, status, city, limit, skip } = payload;
+      const where = {
+        OR: [
+          { user: { phoneNumber: { contains: search } } },
+          { user: { profile: { firstName: { contains: search } } } },
+          { user: { profile: { lastName: { contains: search } } } },
+        ],
+        AND: [
+          dateFrom ? { createdAt: { gte: dateFrom } } : {},
+          dateTo ? { createdAt: { lte: dateTo } } : {},
+          status ? { status: { equals: status } } : {},
+          city
+            ? {
+                OR: [
+                  { deliveryInfo: { city: { nameRu: { contains: city } } } },
+                  { deliveryInfo: { city: { nameKz: { contains: city } } } },
+                  { deliveryInfo: { city: { nameEn: { contains: city } } } },
+                ],
+              }
+            : {},
+        ],
+      };
+
+      return await this.prisma.order.findMany({
+        where: where,
+        select: {
+          user: {
+            select: {
+              phoneNumber: true,
+              isActive: true,
+              profile: { select: { firstName: true, lastName: true } },
+            },
+          },
+          trackingNumber: true,
+          cartItems: {
+            select: {
+              id: true,
+              model: true,
+              quantity: true,
+              totalPrice: true,
+            },
+          },
+          deliveryInfo: true,
+          createdAt: true,
+          totalPrice: true,
+          status: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: skip,
+      });
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
+
   async addTrackingNumber(orderId: number, trackingNumber: string) {
     try {
       return await this.prisma.order.update({

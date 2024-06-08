@@ -14,9 +14,11 @@ import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
-import got from 'got';
-import md5 from 'md5';
-import xml2js from 'xml2js';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const md5 = require('md5');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const parseString = require('xml2js').parseString;
 
 @Injectable()
 export class OrderService {
@@ -330,7 +332,7 @@ export class OrderService {
 
     const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
       return new Promise((resolve, reject) => {
-        xml2js.parseString(xmlResponse, (err: any, result: any) => {
+        parseString(xmlResponse, (err: any, result: any) => {
           if (err) {
             reject(err);
           } else {

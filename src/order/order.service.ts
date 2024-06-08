@@ -289,6 +289,7 @@ export class OrderService {
       pg_currency: 'KZT',
       pg_testing_mode: testing_mode,
       pg_language: 'ru',
+      pg_description: `Оплата заказа №${pg_order_id}`,
     };
 
     /**
@@ -347,14 +348,15 @@ export class OrderService {
       });
     };
 
-    // extractRedirectUrl(requestPaymentResponse?.data)
-    //   .then((redirectUrl) => {
-    //     console.log('pg_redirect_url:', redirectUrl);
-    //     // Now you can use redirectUrl in your Next.js project
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error:', error);
-    //   });
+    return extractRedirectUrl(requestPaymentResponse)
+      .then((redirectUrl) => {
+        console.log('pg_redirect_url:', redirectUrl);
+        return redirectUrl;
+        // Now you can use redirectUrl in your Next.js project
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
 
     // return request['pg_sig'];
   }

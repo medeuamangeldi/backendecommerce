@@ -227,7 +227,7 @@ export class OrderService {
 
       if (pg_result === '1') {
         const cartItems = await this.cartItemService.getCarItemtOrderByUserId(
-          order.userId,
+          order.id,
         );
         cartItems.forEach(async (cartItem: any) => {
           await this.modelService.decrementStockCount(

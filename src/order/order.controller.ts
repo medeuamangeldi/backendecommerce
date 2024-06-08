@@ -39,6 +39,13 @@ export class OrderController {
     await this.orderService.updateOrder(data);
   }
 
+  @Get('pay/again/:orderId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async payAgain(@Param('orderId') orderId: string) {
+    return await this.orderService.payFailedOrder(+orderId);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

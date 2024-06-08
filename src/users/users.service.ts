@@ -74,6 +74,7 @@ export class UsersService {
         phoneNumber: true,
         secretCode: false,
         password: false,
+        isActive: true,
         createdAt: true,
         updatedAt: true,
         prizes: true,

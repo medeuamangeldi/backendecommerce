@@ -49,17 +49,27 @@ export class ModelController {
   }
 
   @Get()
+  @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'deal', enum: ['0', '1'] })
   @ApiQuery({ name: 'all', enum: ['0', '1'] })
   @ApiQuery({ name: 'productId', required: false })
   async getAllModels(
+    @Query('search') search: string,
     @Query('deal') deal = '0',
     @Query('all') all = '1',
     @Query('productId') productId: string,
+    @Query() { limit = 10, skip = 0 },
   ) {
     const dealBool = deal === '1';
     const allBool = all === '1';
-    return await this.modelService.getModels(dealBool, allBool, productId);
+    return await this.modelService.getModels(
+      dealBool,
+      allBool,
+      productId,
+      search,
+      limit,
+      skip,
+    );
   }
 
   @Patch(':id')

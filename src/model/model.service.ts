@@ -59,8 +59,57 @@ export class ModelService {
     return model;
   }
 
-  async getModels(deal: boolean, all: boolean, productId: string) {
+  async getModels(
+    deal: boolean,
+    all: boolean,
+    productId: string,
+    search: string,
+    limit: number,
+    skip: number,
+  ) {
     let models: any;
+    if (search) {
+      models = await this.prisma.model.findMany({
+        where: {
+          name: { contains: search },
+        },
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          deal: true,
+          photoUrls: true,
+          descriptionKz: true,
+          descriptionEn: true,
+          descriptionRu: true,
+          detailedDescriptionEn: true,
+          detailedDescriptionKz: true,
+          detailedDescriptionRu: true,
+          product: {
+            select: {
+              id: true,
+              nameKz: true,
+              nameEn: true,
+              nameRu: true,
+              category: {
+                select: {
+                  id: true,
+                  nameKz: true,
+                  nameEn: true,
+                  nameRu: true,
+                },
+              },
+            },
+          },
+          inStockCount: true,
+          weightInKg: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: +limit,
+        skip: +skip,
+      });
+      return models;
+    }
     if (all) {
       if (productId) {
         models = await this.getModelsByProductId(+productId);
@@ -97,6 +146,9 @@ export class ModelService {
             inStockCount: true,
             weightInKg: true,
           },
+          orderBy: { createdAt: 'desc' },
+          take: +limit,
+          skip: +skip,
         });
       }
     } else {
@@ -119,6 +171,9 @@ export class ModelService {
           inStockCount: true,
           weightInKg: true,
         },
+        orderBy: { createdAt: 'desc' },
+        take: +limit,
+        skip: +skip,
       });
     }
     return models;

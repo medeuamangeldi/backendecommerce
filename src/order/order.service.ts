@@ -30,50 +30,49 @@ export class OrderService {
       throw new ForbiddenException('Buying is not active');
     }
 
+    const deliveryInfo = await this.prisma.deliveryInfo.findFirst({
+      where: { cart: { userId: userId } },
+      select: { selfPick: true, cart: { select: { userId: true } } },
+    });
+
     try {
       const cartItems = await this.cartItemService.getCarItemtByUserId(userId);
       if (cartItems.length === 0) {
         throw new HttpException('Cart is empty', HttpStatus.BAD_REQUEST);
       }
-      const totalCartPriceDeal = cartItems
-        .filter((item) => item.model.deal === true)
-        .reduce((sum, { totalPrice }) => sum + totalPrice, 0);
 
       const totalCartPrice = cartItems.reduce(
         (sum, { totalPrice }) => sum + totalPrice,
         0,
       );
 
+      let totalForDeliveryPrice = 0;
+
+      if (
+        deliveryInfo?.selfPick === true &&
+        deliveryInfo?.cart?.userId === userId
+      ) {
+        const totalKgForDelivery = cartItems.reduce(
+          (sum, { model, quantity }) => {
+            return sum + model.weightInKg * quantity;
+          },
+          0,
+        );
+        const deliveryPricePerKg =
+          await this.globalConfigService.getDeliveryPricePerKg();
+        totalForDeliveryPrice =
+          totalKgForDelivery * deliveryPricePerKg.deliveryPricePerKg;
+      }
+
       let order: Order;
       if (payStatus.payStatus === true) {
-        order = await this.prisma.order
-          .create({
-            data: {
-              totalPrice: totalCartPrice,
-              userId: userId,
-              status: 'PAYMENT_PENDING',
-            },
-          })
-          .then((order) => {
-            cartItems.forEach(async (cartItem: any) => {
-              await this.modelService.decrementStockCount(
-                cartItem.modelId,
-                cartItem.quantity,
-              );
-            });
-            return order;
-          });
-
-        const GC = await this.globalConfigService.getIsDealActive();
-
-        if (GC.isDealActive === true) {
-          const ticketPriceData =
-            await this.globalConfigService.getTicketPrice();
-          const countTicket = Math.floor(
-            totalCartPriceDeal / ticketPriceData.ticketPrice,
-          );
-          await this.ticketService.CreateLotteryTicket(userId, countTicket); // Get lottery tickets
-        }
+        order = await this.prisma.order.create({
+          data: {
+            totalPrice: totalCartPrice + totalForDeliveryPrice,
+            userId: userId,
+            status: 'PAYMENT_PENDING',
+          },
+        });
       } else {
         throw new HttpException('Payment failed', 400);
       }
@@ -226,6 +225,36 @@ export class OrderService {
         },
       });
       console.log(order);
+
+      if (pg_result === '1') {
+        const cartItems = await this.cartItemService.getCarItemtByUserId(
+          order.userId,
+        );
+        cartItems.forEach(async (cartItem: any) => {
+          await this.modelService.decrementStockCount(
+            cartItem.modelId,
+            cartItem.quantity,
+          );
+        });
+
+        const GC = await this.globalConfigService.getIsDealActive();
+
+        if (GC.isDealActive === true) {
+          const totalCartPriceDeal = cartItems
+            .filter((item) => item.model.deal === true)
+            .reduce((sum, { totalPrice }) => sum + totalPrice, 0);
+
+          const ticketPriceData =
+            await this.globalConfigService.getTicketPrice();
+          const countTicket = Math.floor(
+            totalCartPriceDeal / ticketPriceData.ticketPrice,
+          );
+          await this.ticketService.CreateLotteryTicket(
+            order.userId,
+            countTicket,
+          ); // Get lottery tickets
+        }
+      }
     } catch (error) {
       throw new HttpException(error, 500);
     }

@@ -150,7 +150,7 @@ export class CartItemService {
     try {
       return await this.prisma.cartItem.findMany({
         where: { cart: { userId: id } },
-        include: { model: true },
+        include: { model: true, cart: true },
       });
     } catch (error) {
       throw new HttpException(error, 404);

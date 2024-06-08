@@ -35,6 +35,8 @@ export class GlobalConfigService {
         isBuyActive: true,
         ticketPrice: true,
         deliveryPricePerKg: true,
+        ofertaUrl: true,
+        id: true,
       },
     });
     if (!gc) {

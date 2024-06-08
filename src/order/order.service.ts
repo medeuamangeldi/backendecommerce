@@ -15,8 +15,7 @@ import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
-import { Observable, map } from 'rxjs';
+import got from 'got';
 
 const md5 = require('md5');
 const parseString = require('xml2js').parseString;
@@ -292,6 +291,8 @@ export class OrderService {
       pg_language: 'ru',
     };
 
+    console.log('request', request);
+
     /**
      * Function to flatten a multi-dimensional array
      */
@@ -369,9 +370,11 @@ export class OrderService {
     const uri = process.env.PG_PAYMENT_URL;
 
     try {
-      return this.httpService
-        .post(uri, body)
-        .pipe(map((response: AxiosResponse) => response.data));
+      const data = await got.post(uri, {
+        json: body,
+      });
+
+      return data;
     } catch (error) {
       console.error(error);
     }

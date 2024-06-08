@@ -7,6 +7,7 @@ import { CartItemModule } from 'src/cartitem/cartItem.module';
 import { TicketModule } from 'src/ticket/ticket.module';
 import { GlobalConfigModule } from 'src/globalConfig/globalConfig.module';
 import { ModelModule } from 'src/model/model.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ModelModule } from 'src/model/model.module';
     CartItemModule,
     GlobalConfigModule,
     ModelModule,
+    HttpModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],

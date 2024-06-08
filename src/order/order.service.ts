@@ -72,6 +72,7 @@ export class OrderService {
       }
 
       let order: Order;
+      let redirectUrl: string;
       if (payStatus.payStatus === true) {
         order = await this.prisma.order
           .create({
@@ -82,7 +83,7 @@ export class OrderService {
             },
           })
           .then(async (res) => {
-            await this.generateSigAndInitPayment({
+            redirectUrl = await this.generateSigAndInitPayment({
               pg_order_id: res.id,
               pg_amount: res.totalPrice,
             });
@@ -101,6 +102,11 @@ export class OrderService {
       });
 
       this.cartService.remove(userId); // Remove cart
+
+      return {
+        order: order,
+        redirectUrl: redirectUrl,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -348,17 +354,18 @@ export class OrderService {
       });
     };
 
-    return extractRedirectUrl(requestPaymentResponse)
-      .then((redirectUrl) => {
-        console.log('pg_redirect_url:', redirectUrl);
-        return redirectUrl;
+    let redirectUrl = '';
+
+    extractRedirectUrl(requestPaymentResponse)
+      .then((redUrl) => {
+        redirectUrl = redUrl;
         // Now you can use redirectUrl in your Next.js project
       })
       .catch((error) => {
         console.error('Error:', error);
       });
 
-    // return request['pg_sig'];
+    return redirectUrl;
   }
 
   async doNestJSAxiosSend(body: any) {

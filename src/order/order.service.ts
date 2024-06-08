@@ -367,7 +367,7 @@ export class OrderService {
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
       });
-      const data = await response.json();
+      const data = await response.text();
 
       return data;
     } catch (error) {

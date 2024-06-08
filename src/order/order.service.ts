@@ -356,7 +356,7 @@ export class OrderService {
 
     let redirectUrl = '';
 
-    extractRedirectUrl(requestPaymentResponse)
+    await extractRedirectUrl(requestPaymentResponse)
       .then((redUrl) => {
         redirectUrl = redUrl;
         // Now you can use redirectUrl in your Next.js project

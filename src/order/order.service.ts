@@ -16,7 +16,7 @@ import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 const md5 = require('md5');
 const parseString = require('xml2js').parseString;
@@ -325,7 +325,9 @@ export class OrderService {
     request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
 
     const requestPaymentResponse: Observable<AxiosResponse<any>> =
-      await this.httpService.post(process.env.PG_PAYMENT_URL, request);
+      await this.httpService
+        .post(process.env.PG_PAYMENT_URL, JSON.stringify(request))
+        .pipe(map((response) => response.data));
 
     console.log('requestPaymentResponse', requestPaymentResponse);
     // console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);

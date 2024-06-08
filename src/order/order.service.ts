@@ -49,7 +49,7 @@ export class OrderService {
       let totalForDeliveryPrice = 0;
 
       if (
-        deliveryInfo?.selfPick === true &&
+        deliveryInfo?.selfPick === false &&
         deliveryInfo?.cart?.userId === userId
       ) {
         const totalKgForDelivery = cartItems.reduce(

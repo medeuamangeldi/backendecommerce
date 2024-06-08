@@ -160,7 +160,7 @@ export class CartItemService {
   async getCarItemtOrderByUserId(id: number) {
     try {
       return await this.prisma.cartItem.findMany({
-        where: { order: { userId: id } },
+        where: { orderId: id },
         include: { model: true, cart: true, order: true },
       });
     } catch (error) {

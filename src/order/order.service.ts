@@ -136,6 +136,8 @@ export class OrderService {
           createdAt: true,
           totalPrice: true,
           status: true,
+          paymentFailureReason: true,
+          paymentId: true,
         },
         orderBy: { createdAt: 'desc' },
       });
@@ -330,11 +332,7 @@ export class OrderService {
     signatureData.push(secret_key); // Add secret key to the end
     request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
 
-    console.log('request', request);
-
     const requestPaymentResponse = await this.doNestJSAxiosSend(request);
-
-    console.log('requestPaymentResponse', requestPaymentResponse);
     // console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
 
     const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
@@ -366,6 +364,22 @@ export class OrderService {
       });
 
     return redirectUrl;
+  }
+
+  async payFailedOrder(orderId: number) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      select: { userId: true, totalPrice: true },
+    });
+
+    if (!order) {
+      throw new HttpException('Order not found', 404);
+    }
+
+    return await this.generateSigAndInitPayment({
+      pg_order_id: orderId,
+      pg_amount: order.totalPrice,
+    });
   }
 
   async doNestJSAxiosSend(body: any) {

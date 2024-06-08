@@ -203,4 +203,31 @@ export class OrderService {
       throw new HttpException(error, 500);
     }
   }
+
+  async updateOrder(data: any) {
+    const {
+      pg_order_id,
+      pg_result,
+      pg_payment_id,
+      pg_failure_description,
+    }: any = data;
+
+    if (!pg_order_id || !pg_result || !pg_payment_id) {
+      return;
+    }
+
+    try {
+      const order = await this.prisma.order.update({
+        where: { id: +pg_order_id },
+        data: {
+          paymentId: pg_payment_id,
+          paymentFailureReason: pg_result === '0' ? pg_failure_description : '',
+          status: pg_result === '0' ? 'PAYMENT_PENDING' : 'PROCESSING',
+        },
+      });
+      console.log(order);
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
 }

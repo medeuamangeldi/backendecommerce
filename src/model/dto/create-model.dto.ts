@@ -64,4 +64,8 @@ export class CreateModelDto {
   @IsNumber()
   @ApiProperty()
   inStockCount: number;
+
+  @IsNumber()
+  @ApiProperty()
+  weightInKg: number;
 }

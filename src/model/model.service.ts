@@ -41,6 +41,7 @@ export class ModelService {
         detailedDescriptionKz: true,
         detailedDescriptionRu: true,
         inStockCount: true,
+        weightInKg: true,
         product: {
           select: {
             id: true,
@@ -94,6 +95,7 @@ export class ModelService {
               },
             },
             inStockCount: true,
+            weightInKg: true,
           },
         });
       }
@@ -115,6 +117,7 @@ export class ModelService {
           detailedDescriptionKz: true,
           detailedDescriptionRu: true,
           inStockCount: true,
+          weightInKg: true,
         },
       });
     }
@@ -139,6 +142,7 @@ export class ModelService {
         detailedDescriptionKz: true,
         detailedDescriptionRu: true,
         inStockCount: true,
+        weightInKg: true,
       },
     });
     return models;

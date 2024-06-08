@@ -49,6 +49,8 @@ export class FavoriteService {
               price: true,
               deal: true,
               photoUrls: true,
+              weightInKg: true,
+              inStockCount: true,
               product: {
                 select: {
                   id: true,

@@ -51,7 +51,7 @@ export class OrderService {
             data: {
               totalPrice: totalCartPrice,
               userId: userId,
-              status: 'PROCESSING',
+              status: 'PAYMENT_PENDING',
             },
           })
           .then((order) => {
@@ -63,6 +63,7 @@ export class OrderService {
             });
             return order;
           });
+
         const GC = await this.globalConfigService.getIsDealActive();
 
         if (GC.isDealActive === true) {

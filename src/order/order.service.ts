@@ -324,12 +324,16 @@ export class OrderService {
     signatureData.push(secret_key); // Add secret key to the end
     request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
 
-    const requestPaymentResponse: Observable<AxiosResponse<any>> =
-      await this.httpService
-        .post(process.env.PG_PAYMENT_URL, JSON.stringify(request))
-        .pipe(map((response) => response.data));
+    const requestPaymentResponse = await this.doNestJSAxiosSend(request);
+    const requestPaymentResponseWIthJSon = await this.doNestJSAxiosSend(
+      JSON.stringify(request),
+    );
 
     console.log('requestPaymentResponse', requestPaymentResponse);
+    console.log(
+      'requestPaymentResponseWIthJSon',
+      requestPaymentResponseWIthJSon,
+    );
     // console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
 
     const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
@@ -359,5 +363,17 @@ export class OrderService {
     //   });
 
     // return request['pg_sig'];
+  }
+
+  async doNestJSAxiosSend(body: any) {
+    const uri = process.env.PG_PAYMENT_URL;
+
+    try {
+      return this.httpService
+        .post(uri, body)
+        .pipe(map((response: AxiosResponse) => response.data));
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

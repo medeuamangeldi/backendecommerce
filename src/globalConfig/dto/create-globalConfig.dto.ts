@@ -21,4 +21,9 @@ export class CreateGlobalConfigDto {
   @ApiProperty()
   @IsString()
   ofertaUrl: string;
+
+  @IsOptional()
+  @ApiProperty()
+  @IsNumber()
+  deliveryPricePerKg: number;
 }

@@ -36,7 +36,8 @@ export class OrderController {
 
   @Post('callback')
   async resultUrlPayment(@Body() data: any) {
-    return await this.orderService.updateOrder(data);
+    const order = await this.orderService.updateOrder(data);
+    console.log('order', order);
   }
 
   @Get()

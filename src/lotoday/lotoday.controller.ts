@@ -21,9 +21,6 @@ export class LotoDayController {
   constructor(private lotoDayService: LotoDayService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('ADMIN')
-  @ApiBearerAuth()
   async getAllLotoDay() {
     return await this.lotoDayService.getAllLotoDay();
   }

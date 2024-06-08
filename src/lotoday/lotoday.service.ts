@@ -3,8 +3,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLotoDayDto } from './dto/create-lotoday.dto';
 import { UpdateLotoDayDto } from './dto/update-lotoday.dto';
 
-
-
 @Injectable()
 export class LotoDayService {
   constructor(private prisma: PrismaService) {}
@@ -17,7 +15,9 @@ export class LotoDayService {
   }
   async getAllLotoDay() {
     try {
-      return await this.prisma.lotoDay.findMany();
+      return await this.prisma.lotoDay.findMany({
+        orderBy: { createdAt: 'desc' },
+      });
     } catch (error) {
       throw new HttpException(error, 500);
     }

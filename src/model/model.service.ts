@@ -104,6 +104,9 @@ export class ModelService {
           inStockCount: true,
           weightInKg: true,
         },
+        orderBy: { createdAt: 'desc' },
+        take: +limit,
+        skip: +skip,
       });
       return models;
     }

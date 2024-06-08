@@ -224,7 +224,6 @@ export class OrderService {
           status: pg_result === '0' ? 'PAYMENT_PENDING' : 'PROCESSING',
         },
       });
-      console.log(order);
 
       if (pg_result === '1') {
         const cartItems = await this.cartItemService.getCarItemtByUserId(
@@ -255,6 +254,7 @@ export class OrderService {
           ); // Get lottery tickets
         }
       }
+      console.log(data);
     } catch (error) {
       throw new HttpException(error, 500);
     }

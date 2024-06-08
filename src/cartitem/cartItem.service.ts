@@ -156,4 +156,15 @@ export class CartItemService {
       throw new HttpException(error, 404);
     }
   }
+
+  async getCarItemtOrderByUserId(id: number) {
+    try {
+      return await this.prisma.cartItem.findMany({
+        where: { order: { userId: id } },
+        include: { model: true, cart: true, order: true },
+      });
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
 }

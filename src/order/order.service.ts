@@ -226,7 +226,7 @@ export class OrderService {
       });
 
       if (pg_result === '1') {
-        const cartItems = await this.cartItemService.getCarItemtByUserId(
+        const cartItems = await this.cartItemService.getCarItemtOrderByUserId(
           order.userId,
         );
         cartItems.forEach(async (cartItem: any) => {

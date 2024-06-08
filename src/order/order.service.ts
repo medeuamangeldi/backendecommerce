@@ -196,8 +196,8 @@ export class OrderService {
           status: true,
         },
         orderBy: { createdAt: 'desc' },
-        take: limit,
-        skip: skip,
+        take: +limit,
+        skip: +skip,
       });
     } catch (error) {
       throw new HttpException(error, 500);

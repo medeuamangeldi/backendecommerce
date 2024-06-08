@@ -34,6 +34,12 @@ export class OrderController {
     return await this.orderService.create(createOrderDto, userId);
   }
 
+  @Post('callback')
+  async resultUrlPayment(@Body() data: any) {
+    console.log(data);
+    // return await this.orderService.resultUrlPayment(data);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -50,7 +56,7 @@ export class OrderController {
     return await this.orderService.getOrders(+userId);
   }
 
-  @Get('/all')
+  @Get('all')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiQuery({ name: 'search', required: false })

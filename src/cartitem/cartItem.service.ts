@@ -130,6 +130,8 @@ export class CartItemService {
                   price: true,
                   deal: true,
                   photoUrls: true,
+                  weightInKg: true,
+                  inStockCount: true,
                 },
               },
             },

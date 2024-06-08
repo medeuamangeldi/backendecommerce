@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import {
   HttpException,
   Injectable,
@@ -13,6 +14,10 @@ import { TicketService } from 'src/ticket/ticket.service';
 import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
+import { HttpService } from '@nestjs/axios';
+
+const md5 = require('md5');
+const parseString = require('xml2js').parseString;
 
 @Injectable()
 export class OrderService {
@@ -23,6 +28,7 @@ export class OrderService {
     private readonly ticketService: TicketService,
     private readonly globalConfigService: GlobalConfigService,
     private readonly modelService: ModelService,
+    private readonly httpService: HttpService,
   ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
     const GC = await this.globalConfigService.getIsBuyActive();
@@ -66,13 +72,21 @@ export class OrderService {
 
       let order: Order;
       if (payStatus.payStatus === true) {
-        order = await this.prisma.order.create({
-          data: {
-            totalPrice: totalCartPrice + totalForDeliveryPrice,
-            userId: userId,
-            status: 'PAYMENT_PENDING',
-          },
-        });
+        order = await this.prisma.order
+          .create({
+            data: {
+              totalPrice: totalCartPrice + totalForDeliveryPrice,
+              userId: userId,
+              status: 'PAYMENT_PENDING',
+            },
+          })
+          .then(async (res) => {
+            await this.generateSigAndInitPayment({
+              pg_order_id: res.id,
+              pg_amount: res.totalPrice,
+            });
+            return res;
+          });
       } else {
         throw new HttpException('Payment failed', 400);
       }
@@ -258,5 +272,90 @@ export class OrderService {
     } catch (error) {
       throw new HttpException(error, 500);
     }
+  }
+
+  async generateSigAndInitPayment({ pg_order_id, pg_amount }: any) {
+    const pg_merchant_id: any = process.env.PG_MERCHANT_ID;
+    const secret_key: any = process.env.PG_MERCHANT_SECRET;
+    const salt: any = process.env.PG_MERCHANT_SALT;
+    const testing_mode = process.env.PG_TESTING_MODE;
+
+    const request: any = {
+      pg_order_id: `${pg_order_id}`,
+      pg_merchant_id: pg_merchant_id,
+      pg_amount: `${pg_amount}`,
+      pg_salt: salt,
+      pg_currency: 'KZT',
+      pg_testing_mode: testing_mode,
+      pg_language: 'ru',
+    };
+
+    /**
+     * Function to flatten a multi-dimensional array
+     */
+    function makeFlatParamsArray(arrParams: any, parentName = '') {
+      const arrFlatParams: any = {};
+      let i = 0;
+      // eslint-disable-next-line prefer-const
+      for (let key in arrParams) {
+        i++;
+        const name = parentName + key + i.toString().padStart(3, '0');
+        if (Array.isArray(arrParams[key])) {
+          Object.assign(
+            arrFlatParams,
+            makeFlatParamsArray(arrParams[key], name),
+          );
+          continue;
+        }
+        arrFlatParams[name] = arrParams[key].toString();
+      }
+      return arrFlatParams;
+    }
+
+    // Convert request object to a flat array
+    const requestForSignature = makeFlatParamsArray(request);
+
+    // Generate signature
+    const sortedKeys = Object.keys(requestForSignature).sort();
+    const signatureData = sortedKeys.map((key) => requestForSignature[key]);
+    signatureData.unshift('init_payment.php'); // Add script name to the beginning
+    signatureData.push(secret_key); // Add secret key to the end
+    request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
+
+    const requestPaymentResponse: any = await this.httpService.post(
+      process.env.PG_PAYMENT_URL,
+      request,
+    );
+
+    console.log('requestPaymentResponse', requestPaymentResponse);
+    console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
+
+    const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        parseString(xmlResponse, (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            try {
+              const redirectUrl = result.response.pg_redirect_url[0];
+              resolve(redirectUrl);
+            } catch (error) {
+              reject(error);
+            }
+          }
+        });
+      });
+    };
+
+    extractRedirectUrl(requestPaymentResponse?.data)
+      .then((redirectUrl) => {
+        console.log('pg_redirect_url:', redirectUrl);
+        // Now you can use redirectUrl in your Next.js project
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+    // return request['pg_sig'];
   }
 }

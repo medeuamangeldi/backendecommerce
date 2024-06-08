@@ -15,6 +15,8 @@ import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
+import { Observable } from 'rxjs';
 
 const md5 = require('md5');
 const parseString = require('xml2js').parseString;
@@ -322,13 +324,11 @@ export class OrderService {
     signatureData.push(secret_key); // Add secret key to the end
     request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
 
-    const requestPaymentResponse: any = await this.httpService.post(
-      process.env.PG_PAYMENT_URL,
-      request,
-    );
+    const requestPaymentResponse: Observable<AxiosResponse<any>> =
+      await this.httpService.post(process.env.PG_PAYMENT_URL, request);
 
     console.log('requestPaymentResponse', requestPaymentResponse);
-    console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
+    // console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
 
     const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
       return new Promise((resolve, reject) => {
@@ -347,14 +347,14 @@ export class OrderService {
       });
     };
 
-    extractRedirectUrl(requestPaymentResponse?.data)
-      .then((redirectUrl) => {
-        console.log('pg_redirect_url:', redirectUrl);
-        // Now you can use redirectUrl in your Next.js project
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+    // extractRedirectUrl(requestPaymentResponse?.data)
+    //   .then((redirectUrl) => {
+    //     console.log('pg_redirect_url:', redirectUrl);
+    //     // Now you can use redirectUrl in your Next.js project
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error:', error);
+    //   });
 
     // return request['pg_sig'];
   }

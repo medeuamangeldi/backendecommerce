@@ -72,4 +72,14 @@ export class GlobalConfigService {
     }
     return gc;
   }
+
+  async getDeliveryPricePerKg() {
+    const gc = await this.prisma.globalConfig.findFirst({
+      select: { deliveryPricePerKg: true },
+    });
+    if (!gc) {
+      throw new NotFoundException('GlobalConfig not found');
+    }
+    return gc;
+  }
 }

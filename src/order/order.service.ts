@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import {
   HttpException,
   Injectable,
@@ -16,9 +15,8 @@ import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
 import got from 'got';
-
-const md5 = require('md5');
-const parseString = require('xml2js').parseString;
+import md5 from 'md5';
+import xml2js from 'xml2js';
 
 @Injectable()
 export class OrderService {
@@ -339,7 +337,7 @@ export class OrderService {
 
     const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
       return new Promise((resolve, reject) => {
-        parseString(xmlResponse, (err: any, result: any) => {
+        xml2js.parseString(xmlResponse, (err: any, result: any) => {
           if (err) {
             reject(err);
           } else {

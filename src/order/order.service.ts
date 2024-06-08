@@ -289,8 +289,6 @@ export class OrderService {
       pg_language: 'ru',
     };
 
-    console.log('request', request);
-
     /**
      * Function to flatten a multi-dimensional array
      */
@@ -323,16 +321,11 @@ export class OrderService {
     signatureData.push(secret_key); // Add secret key to the end
     request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
 
+    console.log('request', request);
+
     const requestPaymentResponse = await this.doNestJSAxiosSend(request);
-    const requestPaymentResponseWIthJSon = await this.doNestJSAxiosSend(
-      JSON.stringify(request),
-    );
 
     console.log('requestPaymentResponse', requestPaymentResponse);
-    console.log(
-      'requestPaymentResponseWIthJSon',
-      requestPaymentResponseWIthJSon,
-    );
     // console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
 
     const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
@@ -366,11 +359,13 @@ export class OrderService {
 
   async doNestJSAxiosSend(body: any) {
     const uri = process.env.PG_PAYMENT_URL;
-
     try {
-      const data = await got.post(uri, {
-        json: body,
+      const response = await fetch(uri, {
+        method: 'post',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
       });
+      const data = await response.json();
 
       return data;
     } catch (error) {

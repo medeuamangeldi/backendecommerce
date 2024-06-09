@@ -174,6 +174,7 @@ export class OrderService {
       return await this.prisma.order.findMany({
         where: where,
         select: {
+          id: true,
           user: {
             select: {
               phoneNumber: true,

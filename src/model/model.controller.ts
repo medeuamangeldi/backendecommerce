@@ -53,11 +53,13 @@ export class ModelController {
   @ApiQuery({ name: 'deal', enum: ['0', '1'] })
   @ApiQuery({ name: 'all', enum: ['0', '1'] })
   @ApiQuery({ name: 'productId', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
   async getAllModels(
     @Query('search') search: string,
     @Query('deal') deal = '0',
     @Query('all') all = '1',
     @Query('productId') productId: string,
+    @Query('categoryId') categoryId: string,
     @Query() { limit = 10, skip = 0 },
   ) {
     const dealBool = deal === '1';
@@ -65,6 +67,7 @@ export class ModelController {
     return await this.modelService.getModels(
       dealBool,
       allBool,
+      categoryId,
       productId,
       search,
       limit,

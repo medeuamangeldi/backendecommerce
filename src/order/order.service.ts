@@ -194,6 +194,8 @@ export class OrderService {
           createdAt: true,
           totalPrice: true,
           status: true,
+          paymentFailureReason: true,
+          paymentId: true,
         },
         orderBy: { createdAt: 'desc' },
         take: +limit,

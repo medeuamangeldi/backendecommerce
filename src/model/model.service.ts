@@ -48,6 +48,14 @@ export class ModelService {
             nameKz: true,
             nameEn: true,
             nameRu: true,
+            category: {
+              select: {
+                id: true,
+                nameKz: true,
+                nameEn: true,
+                nameRu: true,
+              },
+            },
           },
         },
       },

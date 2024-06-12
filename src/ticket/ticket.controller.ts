@@ -6,9 +6,10 @@ import {
   Patch,
   Body,
   Param,
+  Query,
   Post,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
@@ -28,6 +29,15 @@ export class TicketController {
   async getLotteryTickets(@Req() req: Request) {
     const userId = req.user['id'];
     return await this.ticketService.GetLotteryTickets(+userId);
+  }
+
+  @Get('/combination')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiQuery({ name: 'combination', required: false })
+  @ApiBearerAuth()
+  async getLotteryTicket(@Query('combination') combination: string) {
+    return await this.ticketService.GetLotteryTicket(combination);
   }
 
   @Patch('win')

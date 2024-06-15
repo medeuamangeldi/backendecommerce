@@ -13,9 +13,24 @@ export class ProductService {
       throw new HttpException('error', 404, { cause: new Error('Error') });
     }
   }
-  async findAll() {
+  async findAll(payload: { search: string; limit: number; skip: number }) {
+    const { search, limit, skip } = payload;
+    let whereClause = {};
+    if (search) {
+      whereClause = {
+        OR: [
+          { nameKz: { contains: search } },
+          { nameEn: { contains: search } },
+          { nameRu: { contains: search } },
+        ],
+      };
+    }
     try {
-      return await this.prisma.product.findMany();
+      return await this.prisma.product.findMany({
+        where: whereClause,
+        take: +limit,
+        skip: +skip,
+      });
     } catch (error) {
       throw new HttpException('error', 404, { cause: new Error('Error') });
     }

@@ -144,33 +144,6 @@ export class UsersService {
     return user;
   }
 
-  async getUserByTicket(combination: string) {
-    try {
-      const user = await this.prisma.user.findFirst({
-        where: { lotteryTickets: { some: { combination: combination } } },
-        select: {
-          id: true,
-          profile: { select: { firstName: true, lastName: true } },
-          phoneNumber: true,
-          secretCode: false,
-          password: false,
-          isActive: true,
-          createdAt: true,
-          updatedAt: true,
-          prizes: true,
-          orders: true,
-          lotteryTickets: true,
-          _count: {
-            select: { orders: true, lotteryTickets: true, prizes: true },
-          },
-        },
-      });
-      return user;
-    } catch (error) {
-      throw new HttpException(error, 404);
-    }
-  }
-
   async update(id: number, data: UpdateUserDto) {
     try {
       if (data.password) {

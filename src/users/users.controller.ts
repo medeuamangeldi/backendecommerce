@@ -70,15 +70,6 @@ export class UsersController {
     return await this.usersService.getUserPrizes(+id);
   }
 
-  @Get('combination/ticket')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('ADMIN')
-  @ApiQuery({ name: 'combination', required: false })
-  @ApiBearerAuth()
-  async getUserByTicket(@Query('combination') combination: string) {
-    return await this.usersService.getUserByTicket(combination);
-  }
-
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

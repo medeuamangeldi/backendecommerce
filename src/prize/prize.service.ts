@@ -59,4 +59,25 @@ export class PrizeService {
       throw new HttpException(error, 500);
     }
   }
+
+  async getAllPrize() {
+    try {
+      const prizes = await this.prisma.prize.findMany({
+        select: {
+          id: true,
+          prizeName: true,
+          lotoDay: { select: { lotoDate: true } },
+          user: {
+            select: {
+              phoneNumber: true,
+              profile: { select: { firstName: true, lastName: true } },
+            },
+          },
+        },
+      });
+      return prizes;
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
 }

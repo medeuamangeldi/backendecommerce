@@ -42,6 +42,14 @@ export class PrizeController {
     return await this.prizeService.getPriseByUser(userId);
   }
 
+  @Get('all')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async getAllPrize() {
+    return await this.prizeService.getAllPrize();
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')

@@ -2,6 +2,7 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CategoryService {
@@ -69,12 +70,22 @@ export class CategoryService {
     return category;
   }
 
-  async findAll() {
-    try {
-      return await this.prisma.category.findMany();
-    } catch (error) {
-      throw new HttpException('error', 404, { cause: new Error('Error') });
+  async findAll(search: string, limit: number, skip: number) {
+    let whereClause = {};
+    if (search) {
+      whereClause = {
+        OR: [
+          { nameKz: { contains: search } },
+          { nameEn: { contains: search } },
+          { nameRu: { contains: search } },
+        ],
+      };
     }
+    return await this.prisma.category.findMany({
+      where: whereClause,
+      skip: +skip,
+      take: +limit,
+    });
   }
 
   async remove(id: number) {

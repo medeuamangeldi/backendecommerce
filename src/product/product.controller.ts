@@ -10,8 +10,15 @@ import {
   UseInterceptors,
   UploadedFile,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiTags,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -38,8 +45,13 @@ export class ProductController {
   }
 
   @Get()
-  async getAllProducts() {
-    return await this.productService.findAll();
+  @ApiQuery({ name: 'search', required: false })
+  async getAllProducts(
+    @Query('search') search: string,
+    @Query() { limit = 10, skip = 0 },
+  ) {
+    const payload = { search, limit, skip };
+    return await this.productService.findAll(payload);
   }
 
   @Get(':id')

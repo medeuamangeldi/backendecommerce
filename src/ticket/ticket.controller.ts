@@ -26,14 +26,16 @@ export class TicketController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async getLotteryTickets(@Req() req: Request) {
+  async getLotteryTickets(
+    @Req() req: Request,
+    @Query() { limit = 10, skip = 0 },
+  ) {
     const userId = req.user['id'];
-    return await this.ticketService.GetLotteryTickets(+userId);
+    return await this.ticketService.GetLotteryTickets(+userId, limit, skip);
   }
 
   @Get('/combination')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard)
   @ApiQuery({ name: 'combination', required: false })
   @ApiBearerAuth()
   async getLotteryTicket(@Query('combination') combination: string) {

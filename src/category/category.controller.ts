@@ -7,8 +7,9 @@ import {
   Post,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -30,8 +31,13 @@ export class CategoryController {
   }
 
   @Get()
-  async getAllCategories() {
-    return await this.categoryService.findAll();
+  @ApiQuery({ name: 'search', required: false })
+  async getAllCategories(
+    @Query('search') search: string,
+    @Query() { limit = 10, skip = 0 },
+  ) {
+    console.log(search, limit, skip);
+    return await this.categoryService.findAll(search, limit, skip);
   }
 
   @Get(':id')

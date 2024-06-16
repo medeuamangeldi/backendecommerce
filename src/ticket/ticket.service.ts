@@ -42,6 +42,28 @@ export class TicketService {
     }
   }
 
+  async GetLotteryTicket(combination: string) {
+    try {
+      const ticket = await this.prisma.lotteryTicket.findUnique({
+        where: { combination: combination },
+        select: {
+          userId: true,
+          combination: true,
+          isWin: true,
+          user: {
+            select: {
+              phoneNumber: true,
+              profile: { select: { firstName: true, lastName: true } },
+            },
+          },
+        },
+      });
+      return ticket;
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
+  }
+
   async UpdateLotteryTicketWin(updateTicketDto: UpdateTicketDto) {
     try {
       const ticket = await this.prisma.lotteryTicket.update({

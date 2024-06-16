@@ -28,6 +28,19 @@ export class ProductService {
     try {
       return await this.prisma.product.findMany({
         where: whereClause,
+        select: {
+          id: true,
+          nameKz: true,
+          nameEn: true,
+          nameRu: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+          models: true,
+          category: true,
+          categoryId: true,
+          currency: true,
+        },
         take: +limit,
         skip: +skip,
       });

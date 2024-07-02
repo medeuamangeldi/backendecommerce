@@ -35,6 +35,7 @@ export class GlobalConfigService {
         isBuyActive: true,
         ticketPrice: true,
         deliveryPricePerKg: true,
+        limitStockCount: true,
         ofertaUrl: true,
         id: true,
       },
@@ -78,6 +79,16 @@ export class GlobalConfigService {
   async getDeliveryPricePerKg() {
     const gc = await this.prisma.globalConfig.findFirst({
       select: { deliveryPricePerKg: true },
+    });
+    if (!gc) {
+      throw new NotFoundException('GlobalConfig not found');
+    }
+    return gc;
+  }
+
+  async getLimitStockCount() {
+    const gc = await this.prisma.globalConfig.findFirst({
+      select: { limitStockCount: true },
     });
     if (!gc) {
       throw new NotFoundException('GlobalConfig not found');

@@ -229,12 +229,13 @@ model City {
 }
 
 model GlobalConfig {
-  id            Int       @id @default(autoincrement())
-  isDealActive  Boolean   @default(false)
-  isBuyActive   Boolean   @default(false)
-  ticketPrice   Float     @default(2000)
-  deliveryPricePerKg Float @default(500)
-  ofertaUrl     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                  Int       @id @default(autoincrement())
+  isDealActive        Boolean   @default(false)
+  isBuyActive         Boolean   @default(false)
+  ticketPrice         Float     @default(2000)
+  deliveryPricePerKg  Float     @default(500)
+  limitStockCount     Int       @default(50)
+  ofertaUrl           String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }

@@ -90,4 +90,9 @@ export class GlobalConfigController {
   async getGlobalConfig() {
     return await this.globalConfigService.getGC();
   }
+
+  @Get('limitStockCount/')
+  async getLimitStockCount() {
+    return await this.globalConfigService.getLimitStockCount();
+  }
 }

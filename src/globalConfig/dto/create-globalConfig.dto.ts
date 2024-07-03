@@ -26,4 +26,9 @@ export class CreateGlobalConfigDto {
   @ApiProperty()
   @IsNumber()
   deliveryPricePerKg: number;
+
+  @IsOptional()
+  @ApiProperty()
+  @IsNumber()
+  limitStockCount: number;
 }

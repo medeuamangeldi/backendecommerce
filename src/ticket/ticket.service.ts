@@ -34,6 +34,20 @@ export class TicketService {
           userId: true,
           combination: true,
           isWin: true,
+          user: {
+            select: {
+              phoneNumber: true,
+              profile: { select: { firstName: true, lastName: true } },
+              prizes: {
+                select: {
+                  prizeName: true,
+                  lotoDay: true,
+                  lotoDayId: true,
+                  createdAt: true,
+                },
+              },
+            },
+          },
         },
         take: +limit,
         skip: +skip,
@@ -56,6 +70,14 @@ export class TicketService {
             select: {
               phoneNumber: true,
               profile: { select: { firstName: true, lastName: true } },
+              prizes: {
+                select: {
+                  prizeName: true,
+                  lotoDay: true,
+                  lotoDayId: true,
+                  createdAt: true,
+                },
+              },
             },
           },
         },

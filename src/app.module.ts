@@ -17,6 +17,7 @@ import { CartItemModule } from './cartitem/cartItem.module';
 import { TicketModule } from './ticket/ticket.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { MinioService } from './minio/minio.service';
+import { FaqModule } from './faq/faq.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { MinioService } from './minio/minio.service';
     FavoriteModule,
     CartItemModule,
     DeliverInfoModule,
+    FaqModule,
   ],
   controllers: [AppController],
   providers: [AppService, MinioService],

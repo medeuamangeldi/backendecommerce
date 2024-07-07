@@ -10,12 +10,13 @@ import {
 } from '@nestjs/common';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { RoleGuard } from 'src/auth/roles.guard';
 
 @Controller('faq')
+@ApiTags('faq')
 export class FaqController {
   constructor(private readonly faqService: FaqService) {}
 

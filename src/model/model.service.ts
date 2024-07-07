@@ -205,6 +205,146 @@ export class ModelService {
     }
     return models;
   }
+
+  async getModelsForAdmin(
+    deal: boolean,
+    all: boolean,
+    categoryId: string,
+    productId: string,
+    search: string,
+    limit: number,
+    skip: number,
+  ) {
+    let models: any;
+    if (search) {
+      models = await this.prisma.model.findMany({
+        where: {
+          name: { contains: search },
+        },
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          deal: true,
+          photoUrls: true,
+          descriptionKz: true,
+          descriptionEn: true,
+          descriptionRu: true,
+          detailedDescriptionEn: true,
+          detailedDescriptionKz: true,
+          detailedDescriptionRu: true,
+          product: {
+            select: {
+              id: true,
+              nameKz: true,
+              nameEn: true,
+              nameRu: true,
+              category: {
+                select: {
+                  id: true,
+                  nameKz: true,
+                  nameEn: true,
+                  nameRu: true,
+                },
+              },
+            },
+          },
+          inStockCount: true,
+          weightInKg: true,
+        },
+        orderBy: { inStockCount: 'desc' },
+        take: +limit,
+        skip: +skip,
+      });
+      return models;
+    }
+    if (all) {
+      if (categoryId) {
+        models = await this.getModelsByCategoryId(+categoryId);
+      } else if (productId) {
+        models = await this.getModelsByProductId(+productId);
+      } else {
+        models = await this.prisma.model.findMany({
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            deal: true,
+            photoUrls: true,
+            descriptionKz: true,
+            descriptionEn: true,
+            descriptionRu: true,
+            detailedDescriptionEn: true,
+            detailedDescriptionKz: true,
+            detailedDescriptionRu: true,
+            product: {
+              select: {
+                id: true,
+                nameKz: true,
+                nameEn: true,
+                nameRu: true,
+                category: {
+                  select: {
+                    id: true,
+                    nameKz: true,
+                    nameEn: true,
+                    nameRu: true,
+                  },
+                },
+              },
+            },
+            inStockCount: true,
+            weightInKg: true,
+          },
+          orderBy: { inStockCount: 'desc' },
+          take: +limit,
+          skip: +skip,
+        });
+      }
+    } else {
+      models = await this.prisma.model.findMany({
+        where: {
+          deal,
+        },
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          deal: true,
+          photoUrls: true,
+          descriptionKz: true,
+          descriptionEn: true,
+          descriptionRu: true,
+          detailedDescriptionEn: true,
+          detailedDescriptionKz: true,
+          detailedDescriptionRu: true,
+          product: {
+            select: {
+              id: true,
+              nameKz: true,
+              nameEn: true,
+              nameRu: true,
+              category: {
+                select: {
+                  id: true,
+                  nameKz: true,
+                  nameEn: true,
+                  nameRu: true,
+                },
+              },
+            },
+          },
+          inStockCount: true,
+          weightInKg: true,
+        },
+        orderBy: { inStockCount: 'desc' },
+        take: +limit,
+        skip: +skip,
+      });
+    }
+    return models;
+  }
+
   async getModelsByCategoryId(categoryId: number) {
     const models = await this.prisma.model.findMany({
       where: {

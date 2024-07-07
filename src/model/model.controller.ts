@@ -75,6 +75,36 @@ export class ModelController {
     );
   }
 
+  @Get('admin/all')
+  @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'deal', enum: ['0', '1'] })
+  @ApiQuery({ name: 'all', enum: ['0', '1'] })
+  @ApiQuery({ name: 'productId', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async getAllModelsForAdmin(
+    @Query('search') search: string,
+    @Query('deal') deal = '0',
+    @Query('all') all = '1',
+    @Query('productId') productId: string,
+    @Query('categoryId') categoryId: string,
+    @Query() { limit = 10, skip = 0 },
+  ) {
+    const dealBool = deal === '1';
+    const allBool = all === '1';
+    return await this.modelService.getModelsForAdmin(
+      dealBool,
+      allBool,
+      categoryId,
+      productId,
+      search,
+      limit,
+      skip,
+    );
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()

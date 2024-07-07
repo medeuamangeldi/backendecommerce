@@ -252,7 +252,7 @@ export class ModelService {
           inStockCount: true,
           weightInKg: true,
         },
-        orderBy: { inStockCount: 'desc' },
+        orderBy: { inStockCount: 'asc' },
         take: +limit,
         skip: +skip,
       });
@@ -296,7 +296,7 @@ export class ModelService {
             inStockCount: true,
             weightInKg: true,
           },
-          orderBy: { inStockCount: 'desc' },
+          orderBy: { inStockCount: 'asc' },
           take: +limit,
           skip: +skip,
         });
@@ -337,7 +337,7 @@ export class ModelService {
           inStockCount: true,
           weightInKg: true,
         },
-        orderBy: { inStockCount: 'desc' },
+        orderBy: { inStockCount: 'asc' },
         take: +limit,
         skip: +skip,
       });

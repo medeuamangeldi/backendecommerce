@@ -23,15 +23,20 @@ import { CreatePrizeDto } from './dto/create-prize.dto';
 export class PrizeController {
   constructor(private prizeService: PrizeService) {}
 
-  @Post(':userId/addPrize')
+  @Post(':userId/addPrize/:combination')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('ADMIN')
   @ApiBearerAuth()
   async createPrize(
     @Body() createPrizeDto: CreatePrizeDto,
     @Param('userId') userId: string,
+    @Param('combination') combination: string,
   ) {
-    return await this.prizeService.CreatePrize(+userId, createPrizeDto);
+    return await this.prizeService.CreatePrize(
+      +userId,
+      createPrizeDto,
+      combination,
+    );
   }
 
   @Get()

@@ -8,7 +8,11 @@ import { CreatePrizeDto } from './dto/create-prize.dto';
 export class PrizeService {
   constructor(private prisma: PrismaService) {}
 
-  async CreatePrize(userId: number, createPrizeDto: CreatePrizeDto) {
+  async CreatePrize(
+    userId: number,
+    createPrizeDto: CreatePrizeDto,
+    combination: string,
+  ) {
     try {
       const prize = await this.prisma.prize.create({
         data: {
@@ -17,6 +21,13 @@ export class PrizeService {
           lotoDayId: createPrizeDto.lotoDayId,
         },
       });
+      if (prize) {
+        await this.prisma.lotteryTicket.update({
+          where: { combination: combination },
+          data: { isWin: true },
+        });
+        return prize;
+      }
       return prize;
     } catch (error) {
       throw new HttpException(error, 500);

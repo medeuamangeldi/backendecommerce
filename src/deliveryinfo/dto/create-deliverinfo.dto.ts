@@ -47,4 +47,9 @@ export class CreateDeliveryInfoDto {
   @IsOptional()
   @ApiProperty()
   pickupUrl: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  selfPickDate: string;
 }

@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CartItemService } from 'src/cartitem/cartItem.service';
@@ -10,8 +10,26 @@ export class CartService {
     private readonly cartItemService: CartItemService,
   ) {}
 
+  async isModelOutOfStock(modelId: number, quantity: number) {
+    const model = await this.prisma.model.findUnique({
+      where: { id: modelId },
+      select: { inStockCount: true },
+    });
+    if (model.inStockCount < quantity) {
+      return true;
+    }
+    return false;
+  }
+
   async create(createCartDto: CreateCartDto) {
     try {
+      const isOutOfStock = await this.isModelOutOfStock(
+        createCartDto.modelId,
+        createCartDto.quantity,
+      );
+      if (isOutOfStock) {
+        throw new ForbiddenException('Model is out of stock');
+      }
       const userId = createCartDto.userId;
       let cart: any = await this.prisma.cart.findFirst({ where: { userId } });
       if (!cart) {

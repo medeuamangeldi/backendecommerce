@@ -14,6 +14,8 @@ import { GlobalConfigService } from 'src/globalConfig/globalConfig.service';
 import { OrderStatus } from './dto/update-order.dto';
 import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
+import { FilledSelfPickDateService } from 'src/filled-self-pick-date/filled-self-pick-date.service';
+import { CreateFilledSelfPickDateDto } from 'src/filled-self-pick-date/dto/create-filledSelfPickDate.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const md5 = require('md5');
@@ -30,6 +32,7 @@ export class OrderService {
     private readonly globalConfigService: GlobalConfigService,
     private readonly modelService: ModelService,
     private readonly httpService: HttpService,
+    private readonly filledSelfPickDateService: FilledSelfPickDateService,
   ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
     const GC = await this.globalConfigService.getIsBuyActive();
@@ -270,6 +273,12 @@ export class OrderService {
           paymentFailureReason: pg_result === '0' ? pg_failure_description : '',
           status: pg_result === '0' ? 'PAYMENT_PENDING' : 'PROCESSING',
         },
+        select: {
+          deliveryInfo: true,
+          userId: true,
+          id: true,
+          totalPrice: true,
+        },
       });
 
       if (pg_result === '1') {
@@ -300,8 +309,47 @@ export class OrderService {
             countTicket,
           ); // Get lottery tickets
         }
+
+        if (order.deliveryInfo?.selfPick === true) {
+          const totalItems = cartItems.reduce(
+            (sum, { quantity }) => sum + quantity,
+            0,
+          );
+
+          const existingFilledDate =
+            await this.filledSelfPickDateService.findOneByDate(
+              order.deliveryInfo.selfPickDate,
+            );
+          const gcSelfPickLimit =
+            await this.globalConfigService.getSelfPickLimit();
+          if (existingFilledDate) {
+            const currentTotalItems = existingFilledDate.count;
+
+            if (
+              currentTotalItems + totalItems >=
+              gcSelfPickLimit.selfPickLimit
+            ) {
+              await this.filledSelfPickDateService.update(
+                existingFilledDate.id,
+                {
+                  isFilled: true,
+                },
+              );
+            }
+            await this.filledSelfPickDateService.increment(
+              existingFilledDate.id,
+              totalItems,
+            );
+          } else {
+            const data: CreateFilledSelfPickDateDto = {
+              date: order.deliveryInfo.selfPickDate,
+              isFilled: totalItems >= gcSelfPickLimit.selfPickLimit,
+              count: totalItems,
+            };
+            await this.filledSelfPickDateService.create(data);
+          }
+        }
       }
-      console.log(data);
     } catch (error) {
       throw new HttpException(error, 500);
     }

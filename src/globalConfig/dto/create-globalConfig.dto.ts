@@ -31,4 +31,9 @@ export class CreateGlobalConfigDto {
   @ApiProperty()
   @IsNumber()
   limitStockCount: number;
+
+  @IsOptional()
+  @ApiProperty()
+  @IsNumber()
+  selfPickLimit: number;
 }

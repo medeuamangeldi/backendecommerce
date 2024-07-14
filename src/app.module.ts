@@ -18,6 +18,7 @@ import { TicketModule } from './ticket/ticket.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { MinioService } from './minio/minio.service';
 import { FaqModule } from './faq/faq.module';
+import { FilledSelfPickDateModule } from './filled-self-pick-date/filled-self-pick-date.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { FaqModule } from './faq/faq.module';
     CartItemModule,
     DeliverInfoModule,
     FaqModule,
+    FilledSelfPickDateModule,
   ],
   controllers: [AppController],
   providers: [AppService, MinioService],

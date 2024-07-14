@@ -8,6 +8,7 @@ import { TicketModule } from 'src/ticket/ticket.module';
 import { GlobalConfigModule } from 'src/globalConfig/globalConfig.module';
 import { ModelModule } from 'src/model/model.module';
 import { HttpModule } from '@nestjs/axios';
+import { FilledSelfPickDateModule } from 'src/filled-self-pick-date/filled-self-pick-date.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { HttpModule } from '@nestjs/axios';
     GlobalConfigModule,
     ModelModule,
     HttpModule,
+    FilledSelfPickDateModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],

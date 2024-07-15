@@ -16,6 +16,7 @@ import { ModelService } from 'src/model/model.service';
 import { HttpService } from '@nestjs/axios';
 import { FilledSelfPickDateService } from 'src/filled-self-pick-date/filled-self-pick-date.service';
 import { CreateFilledSelfPickDateDto } from 'src/filled-self-pick-date/dto/create-filledSelfPickDate.dto';
+import { MixpanelService } from 'src/mixpanel/mixpanel.service';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const md5 = require('md5');
@@ -33,6 +34,7 @@ export class OrderService {
     private readonly modelService: ModelService,
     private readonly httpService: HttpService,
     private readonly filledSelfPickDateService: FilledSelfPickDateService,
+    private readonly mixpanelService: MixpanelService,
   ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
     const GC = await this.globalConfigService.getIsBuyActive();
@@ -281,6 +283,15 @@ export class OrderService {
         },
       });
 
+      if (pg_result === '0') {
+        this.mixpanelService.track('PAYMENT_FAILED', {
+          distinct_id: order.userId,
+          orderId: order.id,
+          totalPrice: order.totalPrice,
+          reason: pg_failure_description,
+        });
+      }
+
       if (pg_result === '1') {
         const cartItems = await this.cartItemService.getCarItemtOrderByUserId(
           order.id,
@@ -290,6 +301,22 @@ export class OrderService {
             cartItem.modelId,
             cartItem.quantity,
           );
+          this.mixpanelService.track('MODEL_SOLD', {
+            distinct_id: order.userId,
+            modelName: cartItem.model.name,
+            modelPrice: cartItem.model.price,
+            modelProduct: cartItem.model?.product?.nameRu,
+            modelCategory: cartItem.model?.category?.nameRu,
+            quantity: cartItem.quantity,
+            selfPick: order.deliveryInfo?.selfPick,
+            deal: cartItem.model.deal,
+            address: order.deliveryInfo?.selfPick
+              ? order.deliveryInfo?.pickupUrl
+              : order.deliveryInfo?.deliveryAddress,
+          });
+          this.mixpanelService.peopleIncrement(`${order.userId}`, {
+            models_purchased: cartItem.quantity,
+          });
         });
 
         const GC = await this.globalConfigService.getIsDealActive();
@@ -308,6 +335,9 @@ export class OrderService {
             order.userId,
             countTicket,
           ); // Get lottery tickets
+          this.mixpanelService.peopleIncrement(`${order.userId}`, {
+            tickets_received: countTicket,
+          });
         }
 
         if (order.deliveryInfo?.selfPick === true) {

@@ -9,7 +9,7 @@ export class MixpanelService {
   constructor(private configService: ConfigService) {
     this.mixpanel = Mixpanel.init(this.configService.get('MIXPANEL_TOKEN'), {
       debug: true,
-      geolocate: true,
+      // geolocate: true,
     });
   }
 
@@ -19,5 +19,9 @@ export class MixpanelService {
 
   public track(eventName: string, action: any = {}): void {
     this.mixpanel.track(eventName, action);
+  }
+
+  public peopleIncrement(userId: string, action: any = {}): void {
+    this.mixpanel.people.increment(userId, action);
   }
 }

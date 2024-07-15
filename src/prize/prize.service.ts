@@ -1,12 +1,15 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateTicketDto } from 'src/ticket/dto/update-ticket.dto';
 import { UpdatePrizeDto } from './dto/update-prize.dto';
 import { CreatePrizeDto } from './dto/create-prize.dto';
+import { MixpanelService } from 'src/mixpanel/mixpanel.service';
 
 @Injectable()
 export class PrizeService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly mixpanelService: MixpanelService,
+  ) {}
 
   async CreatePrize(
     userId: number,
@@ -22,6 +25,11 @@ export class PrizeService {
         },
       });
       if (prize) {
+        this.mixpanelService.track('PRIZE_GIVEN', {
+          distinct_id: userId,
+          prizeName: createPrizeDto.prizeName,
+          combination: combination,
+        });
         await this.prisma.lotteryTicket.update({
           where: { combination: combination },
           data: { isWin: true },

@@ -9,6 +9,7 @@ import { GlobalConfigModule } from 'src/globalConfig/globalConfig.module';
 import { ModelModule } from 'src/model/model.module';
 import { HttpModule } from '@nestjs/axios';
 import { FilledSelfPickDateModule } from 'src/filled-self-pick-date/filled-self-pick-date.module';
+import { MixpanelService } from 'src/mixpanel/mixpanel.service';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { FilledSelfPickDateModule } from 'src/filled-self-pick-date/filled-self-
     HttpModule,
     FilledSelfPickDateModule,
   ],
-  providers: [OrderService],
+  providers: [OrderService, MixpanelService],
   controllers: [OrderController],
 })
 export class OrderModule {}

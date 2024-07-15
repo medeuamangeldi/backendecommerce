@@ -9,7 +9,7 @@ export class MixpanelService {
   constructor(private configService: ConfigService) {
     this.mixpanel = Mixpanel.init(this.configService.get('MIXPANEL_TOKEN'), {
       debug: true,
-      //   geolocate: true,
+      geolocate: true,
     });
   }
 

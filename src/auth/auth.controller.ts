@@ -18,8 +18,7 @@ export class AuthController {
     @Body() { phoneNumber, password }: LoginDto,
     @Req() req: Request,
   ): Promise<AuthEntity> {
-    const ips = req.headers['x-forwarded-for'] as string;
-    const ip = ips.split(',')[0];
+    const ip = req.headers['x-forwarded-for'] as string;
     return this.authService.login(phoneNumber, password, ip);
   }
 }

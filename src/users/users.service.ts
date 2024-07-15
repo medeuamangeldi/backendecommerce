@@ -4,15 +4,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ProfileService } from 'src/profile/profile.service';
+import { MixpanelService } from 'src/mixpanel/mixpanel.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private readonly profileService: ProfileService,
+    private readonly mixpanelService: MixpanelService,
   ) {}
 
-  async create(data: CreateUserDto) {
+  async create(data: CreateUserDto, ip: string) {
     try {
       let user = await this.prisma.user.findUnique({
         where: { phoneNumber: data.phoneNumber },
@@ -43,6 +45,22 @@ export class UsersService {
           firstName: data?.firstName,
           lastName: data?.lastName,
           avatarUrl: '',
+        });
+        this.mixpanelService.peopleSet(`${user.id}`, {
+          $first_name: data?.firstName,
+          $last_name: data?.lastName,
+          $phone: user.phoneNumber,
+          $created: new Date().toISOString(),
+          models_purchased: 0,
+          tickets_received: 0,
+          $ip: ip,
+        });
+        this.mixpanelService.track('USER_REGISTER', {
+          distinct_id: user.id,
+          phoneNumber: user.phoneNumber,
+          firstName: data?.firstName,
+          lastName: data?.lastName,
+          ip,
         });
       }
       return user;

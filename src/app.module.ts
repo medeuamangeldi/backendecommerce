@@ -19,6 +19,7 @@ import { FavoriteModule } from './favorite/favorite.module';
 import { MinioService } from './minio/minio.service';
 import { FaqModule } from './faq/faq.module';
 import { FilledSelfPickDateModule } from './filled-self-pick-date/filled-self-pick-date.module';
+import { MixpanelService } from './mixpanel/mixpanel.service';
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { FilledSelfPickDateModule } from './filled-self-pick-date/filled-self-pi
     FilledSelfPickDateModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MinioService],
+  providers: [AppService, MinioService, MixpanelService],
 })
 export class AppModule {}

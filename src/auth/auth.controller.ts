@@ -1,6 +1,6 @@
 //src/auth/auth.controller.ts
 
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Ip, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entity/auth.entity';
@@ -13,7 +13,10 @@ export class AuthController {
 
   @Post('login')
   @ApiOkResponse({ type: AuthEntity })
-  login(@Body() { phoneNumber, password }: LoginDto) {
-    return this.authService.login(phoneNumber, password);
+  login(
+    @Body() { phoneNumber, password }: LoginDto,
+    @Ip() ip: string,
+  ): Promise<AuthEntity> {
+    return this.authService.login(phoneNumber, password, ip);
   }
 }

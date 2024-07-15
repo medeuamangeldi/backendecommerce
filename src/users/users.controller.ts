@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   Patch,
   Post,
@@ -26,8 +27,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+  async createUser(@Body() createUserDto: CreateUserDto, @Ip() ip: string) {
+    return await this.usersService.create(createUserDto, ip);
   }
 
   @Get()

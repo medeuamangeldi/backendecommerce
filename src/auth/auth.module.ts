@@ -8,6 +8,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import 'dotenv/config';
+import { MixpanelService } from 'src/mixpanel/mixpanel.service';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import 'dotenv/config';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, MixpanelService],
 })
 export class AuthModule {}

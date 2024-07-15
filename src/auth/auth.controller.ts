@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entity/auth.entity';
 import { LoginDto } from './dto/login.dto';
+import { Request } from 'express';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -15,8 +16,10 @@ export class AuthController {
   @ApiOkResponse({ type: AuthEntity })
   login(
     @Body() { phoneNumber, password }: LoginDto,
-    @Ip() ip: string,
+    @Req() req: Request,
   ): Promise<AuthEntity> {
+    const ips = req.headers['x-forwarded-for'] as string;
+    const ip = ips.split(',')[0];
     return this.authService.login(phoneNumber, password, ip);
   }
 }

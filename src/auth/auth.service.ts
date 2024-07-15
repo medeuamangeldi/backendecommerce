@@ -8,21 +8,12 @@ import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entity/auth.entity';
 import * as bcrypt from 'bcrypt';
-import { MixpanelService } from 'src/mixpanel/mixpanel.service';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private readonly mixpanelService: MixpanelService,
-  ) {}
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
-  async login(
-    phoneNumber: string,
-    password: string,
-    ip: string,
-  ): Promise<AuthEntity> {
+  async login(phoneNumber: string, password: string): Promise<AuthEntity> {
     // Step 1: Fetch a user with the given email
     const user = await this.prisma.user.findUnique({ where: { phoneNumber } });
 
@@ -40,11 +31,6 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
-
-    this.mixpanelService.track('USER_LOGIN', {
-      distinct_id: user.id,
-      ip,
-    });
 
     // Step 3: Generate a JWT containing the user's ID and return it
     return {

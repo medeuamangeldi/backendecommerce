@@ -132,7 +132,27 @@ export class OrderService {
           cartItems: {
             select: {
               id: true,
-              model: true,
+              model: {
+                select: {
+                  id: true,
+                  name: true,
+                  photoUrls: true,
+                  price: true,
+                  deal: true,
+                  inStockCount: true,
+                  weightInKg: true,
+                  descriptionEn: true,
+                  descriptionKz: true,
+                  descriptionRu: true,
+                  detailedDescriptionEn: true,
+                  detailedDescriptionKz: true,
+                  detailedDescriptionRu: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  productId: true,
+                  product: true,
+                },
+              },
               quantity: true,
               totalPrice: true,
             },
@@ -153,7 +173,16 @@ export class OrderService {
 
   async getAllOrders(payload: any) {
     try {
-      const { search, dateFrom, dateTo, status, city, limit, skip } = payload;
+      const {
+        search,
+        dateFrom,
+        dateTo,
+        status,
+        city,
+        limit,
+        skip,
+        pickupDate,
+      } = payload;
       const where = {
         OR: [
           { user: { phoneNumber: { contains: search } } },
@@ -164,6 +193,7 @@ export class OrderService {
           dateFrom ? { createdAt: { gte: dateFrom } } : {},
           dateTo ? { createdAt: { lte: dateTo } } : {},
           status ? { status: { equals: status } } : {},
+          pickupDate ? { deliveryInfo: { selfPickDate: pickupDate } } : {},
           city
             ? {
                 OR: [
@@ -191,7 +221,27 @@ export class OrderService {
           cartItems: {
             select: {
               id: true,
-              model: true,
+              model: {
+                select: {
+                  id: true,
+                  name: true,
+                  photoUrls: true,
+                  price: true,
+                  deal: true,
+                  inStockCount: true,
+                  weightInKg: true,
+                  descriptionEn: true,
+                  descriptionKz: true,
+                  descriptionRu: true,
+                  detailedDescriptionEn: true,
+                  detailedDescriptionKz: true,
+                  detailedDescriptionRu: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  productId: true,
+                  product: true,
+                },
+              },
               quantity: true,
               totalPrice: true,
             },
@@ -208,6 +258,7 @@ export class OrderService {
               pickupUrl: true,
               createdAt: true,
               updatedAt: true,
+              selfPickDate: true,
               city: {
                 select: {
                   nameEn: true,

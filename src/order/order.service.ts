@@ -182,6 +182,7 @@ export class OrderService {
         limit,
         skip,
         pickupDate,
+        deliveryType,
       } = payload;
       const where = {
         OR: [
@@ -190,6 +191,11 @@ export class OrderService {
           { user: { profile: { lastName: { contains: search } } } },
         ],
         AND: [
+          deliveryType === '0'
+            ? { deliveryInfo: { selfPick: { equals: false } } }
+            : deliveryType === '1'
+            ? { deliveryInfo: { selfPick: { equals: true } } }
+            : {},
           dateFrom ? { createdAt: { gte: dateFrom } } : {},
           dateTo ? { createdAt: { lte: dateTo } } : {},
           status ? { status: { equals: status } } : {},

@@ -72,6 +72,7 @@ export class OrderController {
   @ApiQuery({ name: 'city', required: false })
   @ApiQuery({ name: 'pickupDate', required: false })
   @ApiQuery({ name: 'deliveryType', required: false })
+  @ApiQuery({ name: 'filialId', required: false })
   @ApiBearerAuth()
   async getAllOrders(
     @Query('search') search: string,
@@ -81,6 +82,7 @@ export class OrderController {
     @Query('city') city: string,
     @Query('pickupDate') pickupDate: string,
     @Query('deliveryType') deliveryType: string,
+    @Query('filialId') filialId: string,
     @Query() { limit = 10, skip = 0 },
   ) {
     const payload = {
@@ -93,6 +95,7 @@ export class OrderController {
       skip,
       pickupDate,
       deliveryType,
+      filialId,
     };
     return await this.orderService.getAllOrders(payload);
   }

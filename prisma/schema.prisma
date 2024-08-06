@@ -185,6 +185,7 @@ model DeliveryInfo {
   comment         String?
   pickupUrl       String?
   selfPickDate    String?
+  filialId        Int?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

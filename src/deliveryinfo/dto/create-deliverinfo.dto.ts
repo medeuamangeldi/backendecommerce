@@ -52,4 +52,9 @@ export class CreateDeliveryInfoDto {
   @IsOptional()
   @ApiProperty()
   selfPickDate: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  filialId?: number;
 }

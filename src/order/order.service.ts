@@ -183,6 +183,7 @@ export class OrderService {
         skip,
         pickupDate,
         deliveryType,
+        filialId,
       } = payload;
       const where = {
         OR: [
@@ -200,6 +201,7 @@ export class OrderService {
           dateTo ? { createdAt: { lte: dateTo } } : {},
           status ? { status: { equals: status } } : {},
           pickupDate ? { deliveryInfo: { selfPickDate: pickupDate } } : {},
+          filialId ? { deliveryInfo: { filialId: +filialId } } : {},
           city
             ? {
                 OR: [

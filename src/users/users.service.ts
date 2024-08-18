@@ -201,4 +201,21 @@ export class UsersService {
       throw new HttpException(error, 404);
     }
   }
+
+  async getUserSecretCode(id: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        select: { secretCode: true },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      throw new HttpException(error, 404);
+    }
+  }
 }

@@ -103,4 +103,12 @@ export class UsersController {
   async deleteUser(@Param('id') id: string) {
     return await this.usersService.remove(+id);
   }
+
+  @Get(':id/secretCode')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles('ADMIN')
+  @ApiBearerAuth()
+  async getSecretCode(@Param('id') id: string) {
+    return await this.usersService.getUserSecretCode(+id);
+  }
 }

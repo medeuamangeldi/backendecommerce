@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Ip,
   Param,
   Patch,
   Post,
@@ -18,7 +17,6 @@ import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
-import { IsNumber } from 'class-validator';
 import { Request } from 'express';
 
 @Controller('users')

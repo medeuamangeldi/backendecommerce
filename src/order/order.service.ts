@@ -17,11 +17,12 @@ import { HttpService } from '@nestjs/axios';
 import { FilledSelfPickDateService } from 'src/filled-self-pick-date/filled-self-pick-date.service';
 import { CreateFilledSelfPickDateDto } from 'src/filled-self-pick-date/dto/create-filledSelfPickDate.dto';
 import { MixpanelService } from 'src/mixpanel/mixpanel.service';
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const md5 = require('md5');
+const crypto = require('crypto');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const parseString = require('xml2js').parseString;
+// const md5 = require('md5');
+// // eslint-disable-next-line @typescript-eslint/no-var-requires
+// const parseString = require('xml2js').parseString;
 
 @Injectable()
 export class OrderService {
@@ -322,6 +323,9 @@ export class OrderService {
       pg_failure_description,
     }: any = data;
 
+    console.log(data);
+    return;
+
     if (!pg_order_id || !pg_result || !pg_payment_id) {
       return;
     }
@@ -445,84 +449,62 @@ export class OrderService {
   }
 
   async generateSigAndInitPayment({ pg_order_id, pg_amount }: any) {
-    const pg_merchant_id: any = process.env.PG_MERCHANT_ID;
-    const secret_key: any = process.env.PG_MERCHANT_SECRET;
-    const salt: any = process.env.PG_MERCHANT_SALT;
-    const testing_mode = process.env.PG_TESTING_MODE;
+    const secret_key = process.env.OV_SECRET_KEY;
 
-    const request: any = {
-      pg_order_id: `${pg_order_id}`,
-      pg_merchant_id: pg_merchant_id,
-      pg_amount: `${pg_amount}`,
-      pg_salt: salt,
-      pg_currency: 'KZT',
-      pg_testing_mode: testing_mode,
-      pg_language: 'ru',
-      pg_description: `Оплата заказа №${pg_order_id}`,
+    const items = [
+      {
+        merchant_id: process.env.OV_MID,
+        service_id: process.env.OV_SID,
+        merchant_name: process.env.OV_MERCHANT_NAME,
+        name: 'Товар',
+        quantity: 1,
+        amount_one_pcs: 1,
+        amount_sum: 1,
+      },
+    ];
+    const data = {
+      amount: pg_amount,
+      currency: 'KZT',
+      order_id: pg_order_id,
+      description: 'description_1',
+      payment_type: process.env.OV_PAYMENT_TYPE,
+      payment_method: process.env.OV_PAYMENT_METHOD,
+      items: items,
+      email: process.env.OV_EMAIL,
+      payment_lifetime: process.env.OV_LIFETIME,
+      callback_url: process.env.OV_CALLBACK_URL,
     };
 
-    /**
-     * Function to flatten a multi-dimensional array
-     */
-    function makeFlatParamsArray(arrParams: any, parentName = '') {
-      const arrFlatParams: any = {};
-      let i = 0;
-      // eslint-disable-next-line prefer-const
-      for (let key in arrParams) {
-        i++;
-        const name = parentName + key + i.toString().padStart(3, '0');
-        if (Array.isArray(arrParams[key])) {
-          Object.assign(
-            arrFlatParams,
-            makeFlatParamsArray(arrParams[key], name),
-          );
-          continue;
-        }
-        arrFlatParams[name] = arrParams[key].toString();
-      }
-      return arrFlatParams;
+    // Преобразуем объект в строку JSON
+    const dataJson = JSON.stringify(data);
+
+    // Кодируем строку JSON в base64
+    const base64Data = Buffer.from(dataJson).toString('base64');
+
+    // Генерация HMAC-подписи
+    const hmac = crypto.createHmac(process.env.OV_HASH_METHOD, secret_key);
+    hmac.update(base64Data);
+    const sign = hmac.digest('hex');
+
+    // Создаем объект запроса
+    const obj = {
+      data: base64Data,
+      sign: sign,
+    };
+
+    const requestPaymentResponse: any = await this.doNestJSAxiosSend(obj);
+
+    const responseDataEncoded = requestPaymentResponse?.data?.data;
+    const responseData: any = Buffer.from(
+      responseDataEncoded,
+      'base64',
+    ).toString('utf8');
+
+    const redirectUrl = responseData?.payment_page_url;
+
+    if (!redirectUrl) {
+      throw new HttpException('Payment failed', 400);
     }
-
-    // Convert request object to a flat array
-    const requestForSignature = makeFlatParamsArray(request);
-
-    // Generate signature
-    const sortedKeys = Object.keys(requestForSignature).sort();
-    const signatureData = sortedKeys.map((key) => requestForSignature[key]);
-    signatureData.unshift('init_payment.php'); // Add script name to the beginning
-    signatureData.push(secret_key); // Add secret key to the end
-    request['pg_sig'] = md5(signatureData.join(';')); // Generated signature
-
-    const requestPaymentResponse = await this.doNestJSAxiosSend(request);
-    // console.log('requestPaymentResponse?.data', requestPaymentResponse?.data);
-
-    const extractRedirectUrl = (xmlResponse: string): Promise<string> => {
-      return new Promise((resolve, reject) => {
-        parseString(xmlResponse, (err: any, result: any) => {
-          if (err) {
-            reject(err);
-          } else {
-            try {
-              const redirectUrl = result.response.pg_redirect_url[0];
-              resolve(redirectUrl);
-            } catch (error) {
-              reject(error);
-            }
-          }
-        });
-      });
-    };
-
-    let redirectUrl = '';
-
-    await extractRedirectUrl(requestPaymentResponse)
-      .then((redUrl) => {
-        redirectUrl = redUrl;
-        // Now you can use redirectUrl in your Next.js project
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
 
     return redirectUrl;
   }
@@ -544,12 +526,17 @@ export class OrderService {
   }
 
   async doNestJSAxiosSend(body: any) {
-    const uri = process.env.PG_PAYMENT_URL;
+    const uri = process.env.OV_API_URL;
+    const api_key = process.env.OV_API_KEY;
+    const bearer = Buffer.from(api_key).toString('base64');
     try {
-      const response = await fetch(uri, {
+      const response = await fetch(`${uri}/payment/create`, {
         method: 'post',
         body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${bearer}`,
+        },
       });
       const data = await response.text();
 

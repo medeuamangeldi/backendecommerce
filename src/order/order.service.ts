@@ -543,7 +543,7 @@ export class OrderService {
     try {
       const response = await fetch(`${uri}/payment/create`, {
         method: 'post',
-        body: JSON.stringify(body),
+        body: body,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${bearer}`,

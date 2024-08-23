@@ -25,6 +25,7 @@ const data = {
   items: items,
   email: 'medcod49@gmail.com',
   payment_lifetime: 36000,
+  callback_url: 'https://api.iris-zoloto.kz/order/callback',
 };
 
 // Преобразуем объект в строку JSON

@@ -539,6 +539,7 @@ export class OrderService {
     const uri = process.env.OV_API_URL;
     const api_key = process.env.OV_API_KEY;
     const bearer = Buffer.from(api_key).toString('base64');
+    console.log('bearer: ', bearer);
     try {
       const response = await fetch(`${uri}/payment/create`, {
         method: 'post',

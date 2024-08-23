@@ -460,8 +460,8 @@ export class OrderService {
         merchant_name: process.env.OV_MERCHANT_NAME,
         name: 'Товар',
         quantity: 1,
-        amount_one_pcs: 1,
-        amount_sum: 1,
+        amount_one_pcs: pg_amount,
+        amount_sum: pg_amount,
       },
     ];
     const data = {
@@ -474,7 +474,7 @@ export class OrderService {
       items: items,
       email: process.env.OV_EMAIL,
       payment_lifetime: parseInt(process.env.OV_LIFETIME),
-      // callback_url: process.env.OV_CALLBACK_URL,
+      callback_url: process.env.OV_CALLBACK_URL,
     };
 
     console.log('data: ', data);
@@ -484,6 +484,7 @@ export class OrderService {
 
     // Кодируем строку JSON в base64
     const base64Data = Buffer.from(dataJson).toString('base64');
+    console.log('base64Data: ', base64Data);
 
     // Генерация HMAC-подписи
     const hmac = crypto.createHmac(process.env.OV_HASH_METHOD, secret_key);
@@ -543,6 +544,7 @@ export class OrderService {
     try {
       const response = await fetch(`${uri}/payment/create`, {
         method: 'post',
+        credentials: 'include',
         body: body,
         headers: {
           Authorization: `Bearer ${bearer}`,

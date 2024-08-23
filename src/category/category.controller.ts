@@ -36,7 +36,6 @@ export class CategoryController {
     @Query('search') search: string,
     @Query() { limit = 10, skip = 0 },
   ) {
-    console.log(search, limit, skip);
     return await this.categoryService.findAll(search, limit, skip);
   }
 

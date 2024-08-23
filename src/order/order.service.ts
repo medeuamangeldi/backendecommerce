@@ -496,6 +496,8 @@ export class OrderService {
       sign: sign,
     };
 
+    console.log('obj: ', obj);
+
     const requestPaymentResponse: any = await this.doNestJSAxiosSend(obj);
 
     console.log('requestPaymentResponse: ', requestPaymentResponse);
@@ -540,7 +542,7 @@ export class OrderService {
     try {
       const response = await fetch(`${uri}/payment/create`, {
         method: 'post',
-        body: JSON.stringify(body),
+        body: body,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${bearer}`,

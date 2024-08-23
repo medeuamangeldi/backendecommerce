@@ -507,7 +507,7 @@ export class OrderService {
       throw new HttpException(requestPaymentResponse?.error_msg, 400);
     }
 
-    const responseDataEncoded = requestPaymentResponse?.data?.data;
+    const responseDataEncoded = requestPaymentResponse?.data;
     const responseData: any = Buffer.from(
       responseDataEncoded,
       'base64',

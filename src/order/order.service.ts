@@ -511,10 +511,11 @@ export class OrderService {
 
     const responseDataEncoded = requestPaymentResponse?.data;
     console.log('responseDataEncoded: ', responseDataEncoded);
-    const responseData: any = Buffer.from(
-      responseDataEncoded,
-      'base64',
-    ).toString('utf8');
+    let responseData: any = Buffer.from(responseDataEncoded, 'base64').toString(
+      'utf8',
+    );
+
+    responseData = JSON.parse(responseData);
 
     console.log('responseData: ', responseData);
 

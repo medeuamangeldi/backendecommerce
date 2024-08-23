@@ -321,6 +321,9 @@ export class OrderService {
     const parsedData = JSON.parse(decodedData);
     console.log('parsedData: ', parsedData);
     const { order_id, payment_id, error_code }: any = parsedData;
+    console.log('order_id: ', order_id);
+    console.log('payment_id: ', payment_id);
+    console.log('error_code: ', error_code);
 
     const handleErrors = (error_code: string) => {
       switch (error_code) {
@@ -456,10 +459,6 @@ export class OrderService {
           return 'Неизвестная ошибка.';
       }
     };
-
-    if (!order_id || !payment_id) {
-      return;
-    }
 
     try {
       const order = await this.prisma.order.update({

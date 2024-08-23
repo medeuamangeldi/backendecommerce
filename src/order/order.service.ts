@@ -316,9 +316,11 @@ export class OrderService {
   }
 
   async updateOrder(data: any) {
-    const encodedData = data.data;
+    const encodedData = data?.data;
     const decodedData = Buffer.from(encodedData, 'base64').toString('utf8');
-    const { order_id, payment_id, error_code }: any = JSON.parse(decodedData);
+    const parsedData = JSON.parse(decodedData);
+    console.log('parsedData: ', parsedData);
+    const { order_id, payment_id, error_code }: any = parsedData;
 
     const handleErrors = (error_code: string) => {
       switch (error_code) {

@@ -550,6 +550,7 @@ export class OrderService {
         },
       });
       console.log('response: ', response);
+      console.log('headers: ', response.headers);
       const data = await response.text();
 
       return data;

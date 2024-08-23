@@ -451,6 +451,8 @@ export class OrderService {
   async generateSigAndInitPayment({ pg_order_id, pg_amount }: any) {
     const secret_key = process.env.OV_SECRET_KEY;
 
+    console.log('secret_key: ', secret_key);
+
     const items = [
       {
         merchant_id: process.env.OV_MID,
@@ -475,6 +477,8 @@ export class OrderService {
       callback_url: process.env.OV_CALLBACK_URL,
     };
 
+    console.log('data: ', data);
+
     // Преобразуем объект в строку JSON
     const dataJson = JSON.stringify(data);
 
@@ -494,11 +498,15 @@ export class OrderService {
 
     const requestPaymentResponse: any = await this.doNestJSAxiosSend(obj);
 
+    console.log('requestPaymentResponse: ', requestPaymentResponse);
+
     const responseDataEncoded = requestPaymentResponse?.data?.data;
     const responseData: any = Buffer.from(
       responseDataEncoded,
       'base64',
     ).toString('utf8');
+
+    console.log('responseData: ', responseData);
 
     const redirectUrl = responseData?.payment_page_url;
 
@@ -538,6 +546,7 @@ export class OrderService {
           Authorization: `Bearer ${bearer}`,
         },
       });
+      console.log('response: ', response);
       const data = await response.text();
 
       return data;

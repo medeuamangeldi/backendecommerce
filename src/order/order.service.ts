@@ -474,7 +474,7 @@ export class OrderService {
       items: items,
       email: process.env.OV_EMAIL,
       payment_lifetime: parseInt(process.env.OV_LIFETIME),
-      callback_url: process.env.OV_CALLBACK_URL,
+      // callback_url: process.env.OV_CALLBACK_URL,
     };
 
     console.log('data: ', data);
@@ -545,12 +545,10 @@ export class OrderService {
         method: 'post',
         body: body,
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${bearer}`,
+          'Content-Type': 'application/json',
         },
       });
-      console.log('response: ', response);
-      console.log('headers: ', response.headers);
       const data = await response.text();
 
       return data;

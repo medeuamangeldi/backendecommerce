@@ -467,7 +467,7 @@ export class OrderService {
     const data = {
       amount: pg_amount,
       currency: 'KZT',
-      order_id: pg_order_id,
+      order_id: pg_order_id.toString(),
       description: 'description_1',
       payment_type: process.env.OV_PAYMENT_TYPE,
       payment_method: process.env.OV_PAYMENT_METHOD,

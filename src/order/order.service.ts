@@ -503,6 +503,10 @@ export class OrderService {
 
     console.log('requestPaymentResponse: ', requestPaymentResponse);
 
+    if (requestPaymentResponse.success === false) {
+      throw new HttpException(requestPaymentResponse?.error_msg, 400);
+    }
+
     const responseDataEncoded = requestPaymentResponse?.data?.data;
     const responseData: any = Buffer.from(
       responseDataEncoded,
@@ -540,12 +544,13 @@ export class OrderService {
     const uri = process.env.OV_API_URL;
     const api_key = process.env.OV_API_KEY;
     const bearer = Buffer.from(api_key).toString('base64');
-    console.log('bearer: ', bearer);
+    console.log('bearer:', `Bearer ${bearer}`);
+    console.log('body:', body);
     try {
       const response = await fetch(`${uri}/payment/create`, {
         method: 'post',
         credentials: 'include',
-        body: body,
+        body: JSON.stringify(body),
         headers: {
           Authorization: `Bearer ${bearer}`,
           'Content-Type': 'application/json',

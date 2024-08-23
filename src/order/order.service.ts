@@ -499,15 +499,17 @@ export class OrderService {
 
     console.log('obj: ', obj);
 
-    const requestPaymentResponse: any = await this.doNestJSAxiosSend(obj);
+    let requestPaymentResponse: any = await this.doNestJSAxiosSend(obj);
 
     console.log('requestPaymentResponse: ', requestPaymentResponse);
 
-    if (requestPaymentResponse['success'] === false) {
+    requestPaymentResponse = JSON.parse(requestPaymentResponse);
+
+    if (requestPaymentResponse?.success === false) {
       throw new HttpException(requestPaymentResponse?.error_msg, 400);
     }
 
-    const responseDataEncoded = requestPaymentResponse['data'];
+    const responseDataEncoded = requestPaymentResponse?.data;
     console.log('responseDataEncoded: ', responseDataEncoded);
     const responseData: any = Buffer.from(
       responseDataEncoded,

@@ -473,7 +473,7 @@ export class OrderService {
       payment_method: process.env.OV_PAYMENT_METHOD,
       items: items,
       email: process.env.OV_EMAIL,
-      payment_lifetime: process.env.OV_LIFETIME,
+      payment_lifetime: parseInt(process.env.OV_LIFETIME),
       callback_url: process.env.OV_CALLBACK_URL,
     };
 

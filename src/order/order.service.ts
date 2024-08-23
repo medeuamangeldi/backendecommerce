@@ -503,11 +503,12 @@ export class OrderService {
 
     console.log('requestPaymentResponse: ', requestPaymentResponse);
 
-    if (requestPaymentResponse.success === false) {
+    if (requestPaymentResponse?.success === false) {
       throw new HttpException(requestPaymentResponse?.error_msg, 400);
     }
 
     const responseDataEncoded = requestPaymentResponse?.data;
+    console.log('responseDataEncoded: ', responseDataEncoded);
     const responseData: any = Buffer.from(
       responseDataEncoded,
       'base64',

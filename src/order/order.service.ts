@@ -316,27 +316,156 @@ export class OrderService {
   }
 
   async updateOrder(data: any) {
-    const {
-      pg_order_id,
-      pg_result,
-      pg_payment_id,
-      pg_failure_description,
-    }: any = data;
+    const encodedData = data.data;
+    const decodedData = Buffer.from(encodedData, 'base64').toString('utf8');
+    const { order_id, payment_id, error_code }: any = JSON.parse(decodedData);
 
-    console.log(data);
-    return;
+    const handleErrors = (error_code: string) => {
+      switch (error_code) {
+        case 'provider_server_error':
+          return 'Ошибка на стороне банка-эквайера';
+        case 'provider_common_error':
+          return 'Ошибка на стороне сервера банка-эквайера';
+        case 'provider_time_out':
+          return 'Ошибка на стороне банка-эквайера';
+        case 'provider_incorrect_response_format':
+          return 'Ошибка на стороне сервера банка-эквайера';
+        case 'ov_server_error':
+          return 'Ошибка на стороне сервера';
+        case 'ov_routes_unavailable':
+          return 'Ошибка обработки платежа';
+        case 'ov_send_otp_error':
+          return 'Некорректный проверочный код.';
+        case 'ov_incorrect_otp':
+          return 'Некорректный проверочный код.';
+        case 'ov_not_need_approve_status':
+          return 'Ошибка обработки платежа';
+        case 'ov_payment_method_incorrect':
+          return 'Некорректный метод платежа';
+        case 'ov_payment_type_incorrect':
+          return 'Некорректный тип платежа';
+        case 'ov_create_operation_error':
+          return 'Ошибка при создании платежа';
+        case 'ov_confirm_payment_error':
+          return 'Ошибка при подтверждении платежа';
+        case 'ov_cancel_payment_error':
+          return 'Ошибка при отмене платежа';
+        case 'ov_entity_not_found':
+          return 'Сущность не найдена';
+        case 'ov_entity_duplicate':
+          return 'Сущность задублирована';
+        case 'ov_payment_not_found':
+          return 'Платеж не найден';
+        case 'ov_payment_expired':
+          return 'Истекло время жизни платежа.';
+        case 'ov_payment_already_processed':
+          return 'Платеж уже обработан';
+        case 'ov_operation_not_found':
+          return 'Операция не найдена';
+        case 'ov_card_not_found':
+          return 'Карта не найдена';
+        case 'ov_card_incorrect_data':
+          return 'Некорректные данные карты';
+        case 'ov_limit_payment_amount_min':
+          return 'Сумма платежа меньше минимальной';
+        case 'ov_limit_payment_amount':
+          return 'Превышение лимита платежа';
+        case 'ov_limit_payments_count':
+          return 'Превышение лимита платежей';
+        case 'ov_limit_payments_daily_amount':
+          return 'Превышение лимита платежей в день';
+        case 'ov_limit_payments_monthly_amount':
+          return 'Превышение лимита платежей в месяц';
+        case 'ov_limit_payments_daily_count':
+          return 'Превышение лимита платежей в день';
+        case 'ov_limit_payments_monthly_count':
+          return 'Превышение лимита платежей в месяц';
+        case 'ov_commission_incorrect':
+          return 'Некорректная комиссия';
+        case 'ov_refund_amount_exceeded':
+          return 'Превышение суммы возврата';
+        case 'ov_refund_not_permitted':
+          return 'Возврат запрещен';
+        case 'ov_merchant_balance_insufficient':
+          return 'Недостаточно средств на счете Магазина';
+        case 'ov_merchant_balance_not_found':
+          return 'Счет Магазина не найден';
+        case 'ov_merchant_not_found':
+          return 'Магазин не найден';
+        case 'ov_not_two_stage_payment':
+          return 'Ошибка обработки платежа';
+        case 'ov_clear_amount_exceeded':
+          return 'Ошибка процессинга платежа';
+        case 'ov_anti_fraud_rejected':
+          return 'Заблокировано антифрод системой';
+        case 'ov_anti_fraud_internal_error':
+          return 'Карта не прошла проверку в системе антифрод.';
+        case 'ov_anti_fraud_time_out':
+          return 'Карта не прошла проверку в системе антифрод.';
+        case 'ov_payment_lock':
+          return 'Платеж заблокирован';
+        case 'ov_balance_locked':
+          return 'Выплатные балансы заблокированные';
+        case 'provider_card_incorrect':
+          return 'Неверный формат карты';
+        case 'provider_logic_error':
+          return 'Неизвестная ошибка.';
+        case 'provider_card_expired':
+          return 'Истек срок действия карты';
+        case 'provider_anti_fraud_error':
+          return 'Платеж отклонен антифрод системой';
+        case 'provider_not_permitted_operation':
+          return 'операция запрещена';
+        case 'provider_card_not_found':
+          return 'Карта не найдена';
+        case 'provider_insufficient_balance':
+          return 'Недостаточно средств на карте';
+        case 'provider_send_otp_error':
+          return 'ошибка отправки OTP';
+        case 'provider_incorrect_otp_error':
+          return 'неверный OTP';
+        case 'provider_abonent_not_found':
+          return 'абонент не найден';
+        case 'provider_limit_error':
+          return 'Сумма превышает лимит на оплату в интернете.';
+        case 'provider_abonent_inactive':
+          return 'абонент не активен';
+        case 'provider_confirm_payment_error':
+          return 'ошибка подтверждения платежа';
+        case 'provider_cancel_payment_error':
+          return 'ошибка отмены платежа';
+        case 'provider_refund_payment_error':
+          return 'ошибка возврата платежа';
+        case 'provider_mpi_default_error':
+          return 'ошибка MPI';
+        case 'provider_mpi_3ds_error':
+          return 'ошибка 3DS';
+        case 'provider_common_incorrect':
+          return 'общая ошибка провайдера';
+        case 'provider_recurrent_error':
+          return 'ошибка рекуррентного платежа';
+        case 'mpi_default_error':
+          return 'ошибка MPI';
+        case 'mpi_3ds_error':
+          return 'ошибка 3DS';
+        case 'ov_email_required':
+          return 'Не заполнено поле email';
+        default:
+          return 'Неизвестная ошибка.';
+      }
+    };
 
-    if (!pg_order_id || !pg_result || !pg_payment_id) {
+    if (!order_id || !payment_id) {
       return;
     }
 
     try {
       const order = await this.prisma.order.update({
-        where: { id: +pg_order_id },
+        where: { id: +order_id },
         data: {
-          paymentId: pg_payment_id,
-          paymentFailureReason: pg_result === '0' ? pg_failure_description : '',
-          status: pg_result === '0' ? 'PAYMENT_PENDING' : 'PROCESSING',
+          paymentId: payment_id,
+          paymentFailureReason: error_code ? handleErrors(error_code) : '',
+          status: error_code ? 'PAYMENT_PENDING' : 'PROCESSING',
         },
         select: {
           deliveryInfo: true,
@@ -346,16 +475,16 @@ export class OrderService {
         },
       });
 
-      if (pg_result === '0') {
+      if (error_code) {
         this.mixpanelService.track('PAYMENT_FAILED', {
           distinct_id: order.userId,
           orderId: order.id,
           totalPrice: order.totalPrice,
-          reason: pg_failure_description,
+          reason: error_code,
         });
       }
 
-      if (pg_result === '1') {
+      if (!error_code) {
         const cartItems = await this.cartItemService.getCarItemtOrderByUserId(
           order.id,
         );
@@ -451,8 +580,6 @@ export class OrderService {
   async generateSigAndInitPayment({ pg_order_id, pg_amount }: any) {
     const secret_key = process.env.OV_SECRET_KEY;
 
-    console.log('secret_key: ', secret_key);
-
     const items = [
       {
         merchant_id: process.env.OV_MID,
@@ -477,14 +604,11 @@ export class OrderService {
       callback_url: process.env.OV_CALLBACK_URL,
     };
 
-    console.log('data: ', data);
-
     // Преобразуем объект в строку JSON
     const dataJson = JSON.stringify(data);
 
     // Кодируем строку JSON в base64
     const base64Data = Buffer.from(dataJson).toString('base64');
-    console.log('base64Data: ', base64Data);
 
     // Генерация HMAC-подписи
     const hmac = crypto.createHmac(process.env.OV_HASH_METHOD, secret_key);
@@ -497,11 +621,7 @@ export class OrderService {
       sign: sign,
     };
 
-    console.log('obj: ', obj);
-
     let requestPaymentResponse: any = await this.doNestJSAxiosSend(obj);
-
-    console.log('requestPaymentResponse: ', requestPaymentResponse);
 
     requestPaymentResponse = JSON.parse(requestPaymentResponse);
 
@@ -510,14 +630,11 @@ export class OrderService {
     }
 
     const responseDataEncoded = requestPaymentResponse?.data;
-    console.log('responseDataEncoded: ', responseDataEncoded);
     let responseData: any = Buffer.from(responseDataEncoded, 'base64').toString(
       'utf8',
     );
 
     responseData = JSON.parse(responseData);
-
-    console.log('responseData: ', responseData);
 
     const redirectUrl = responseData?.payment_page_url;
 
@@ -548,8 +665,6 @@ export class OrderService {
     const uri = process.env.OV_API_URL;
     const api_key = process.env.OV_API_KEY;
     const bearer = Buffer.from(api_key).toString('base64');
-    console.log('bearer:', `Bearer ${bearer}`);
-    console.log('body:', body);
     try {
       const response = await fetch(`${uri}/payment/create`, {
         method: 'post',

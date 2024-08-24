@@ -319,11 +319,7 @@ export class OrderService {
     const encodedData = data?.data;
     const decodedData = Buffer.from(encodedData, 'base64').toString('utf8');
     const parsedData = JSON.parse(decodedData);
-    console.log('parsedData: ', parsedData);
     const { order_id, payment_id, error_code }: any = parsedData;
-    console.log('order_id: ', typeof order_id);
-    console.log('payment_id: ', typeof payment_id);
-    console.log('error_code: ', typeof error_code);
 
     const handleErrors = (error_code: string) => {
       switch (error_code) {

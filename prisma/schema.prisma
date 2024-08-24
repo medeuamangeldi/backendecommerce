@@ -83,6 +83,7 @@ model Order {
   trackingNumber  String?
   paymentFailureReason String?
   paymentId       String?
+  paymentUrl      String?
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt

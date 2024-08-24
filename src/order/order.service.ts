@@ -581,6 +581,13 @@ export class OrderService {
   }
 
   async generateSigAndInitPayment({ pg_order_id, pg_amount }: any) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: pg_order_id },
+    });
+
+    if (order?.paymentUrl) {
+      return order.paymentUrl;
+    }
     const secret_key = process.env.OV_SECRET_KEY;
 
     const items = [
@@ -644,6 +651,11 @@ export class OrderService {
     if (!redirectUrl) {
       throw new HttpException('Payment failed', 400);
     }
+
+    await this.prisma.order.update({
+      where: { id: pg_order_id },
+      data: { paymentUrl: redirectUrl },
+    });
 
     return redirectUrl;
   }

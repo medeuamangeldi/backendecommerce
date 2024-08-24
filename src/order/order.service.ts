@@ -464,7 +464,7 @@ export class OrderService {
       const order = await this.prisma.order.update({
         where: { id: +order_id },
         data: {
-          paymentId: payment_id,
+          paymentId: payment_id.toString(),
           paymentFailureReason: !!error_code ? handleErrors(error_code) : '',
           status: !!error_code ? 'PAYMENT_PENDING' : 'PROCESSING',
         },

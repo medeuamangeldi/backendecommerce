@@ -130,6 +130,7 @@ export class OrderService {
           userId: true,
           user: true,
           trackingNumber: true,
+          paymentUrl: true,
           cartItems: {
             select: {
               id: true,
@@ -219,6 +220,7 @@ export class OrderService {
         where: where,
         select: {
           id: true,
+          paymentUrl: true,
           user: {
             select: {
               phoneNumber: true,

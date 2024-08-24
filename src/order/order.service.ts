@@ -490,10 +490,16 @@ export class OrderService {
             cartItem.modelId,
             cartItem.quantity,
           );
+          const deliveryPricePerKg =
+            await this.globalConfigService.getDeliveryPricePerKg();
           this.mixpanelService.track('MODEL_SOLD', {
             distinct_id: order.userId,
             modelName: cartItem.model.name,
-            modelPrice: cartItem.model.price,
+            modelPrice:
+              cartItem.model.price * cartItem.quantity +
+              cartItem.model.weightInKg *
+                deliveryPricePerKg.deliveryPricePerKg *
+                cartItem.quantity,
             modelProduct: cartItem.model?.product?.nameRu,
             modelCategory: cartItem.model?.category?.nameRu,
             quantity: cartItem.quantity,

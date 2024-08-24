@@ -321,9 +321,9 @@ export class OrderService {
     const parsedData = JSON.parse(decodedData);
     console.log('parsedData: ', parsedData);
     const { order_id, payment_id, error_code }: any = parsedData;
-    console.log('order_id: ', order_id);
-    console.log('payment_id: ', payment_id);
-    console.log('error_code: ', error_code);
+    console.log('order_id: ', typeof order_id);
+    console.log('payment_id: ', typeof payment_id);
+    console.log('error_code: ', typeof error_code);
 
     const handleErrors = (error_code: string) => {
       switch (error_code) {
@@ -465,8 +465,8 @@ export class OrderService {
         where: { id: +order_id },
         data: {
           paymentId: payment_id,
-          paymentFailureReason: error_code ? handleErrors(error_code) : '',
-          status: error_code ? 'PAYMENT_PENDING' : 'PROCESSING',
+          paymentFailureReason: !!error_code ? handleErrors(error_code) : '',
+          status: !!error_code ? 'PAYMENT_PENDING' : 'PROCESSING',
         },
         select: {
           deliveryInfo: true,
@@ -476,7 +476,7 @@ export class OrderService {
         },
       });
 
-      if (error_code) {
+      if (!!error_code) {
         this.mixpanelService.track('PAYMENT_FAILED', {
           distinct_id: order.userId,
           orderId: order.id,

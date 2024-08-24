@@ -39,6 +39,47 @@ export class OrderService {
   ) {}
   async create(payStatus: CreateOrderDto, userId: number) {
     const GC = await this.globalConfigService.getIsBuyActive();
+    const handleDeliveryPrice = (weight: number) => {
+      if (weight >= 0 && weight <= 500) {
+        return 952;
+      }
+
+      if (weight > 500 && weight <= 1000) {
+        return 986;
+      }
+
+      if (weight > 1000 && weight <= 2000) {
+        return 1042;
+      }
+
+      if (weight > 2000 && weight <= 3000) {
+        return 1092;
+      }
+
+      if (weight > 3000 && weight <= 6000) {
+        return 1254;
+      }
+
+      if (weight > 6000 && weight <= 9000) {
+        return 1411;
+      }
+
+      if (weight > 9000 && weight <= 12000) {
+        return 1568;
+      }
+
+      if (weight > 12000 && weight <= 14000) {
+        return 1680;
+      }
+
+      if (weight > 14000 && weight <= 17000) {
+        return 1837;
+      }
+
+      if (weight > 17000) {
+        return 1994;
+      }
+    };
     if (GC.isBuyActive === false) {
       throw new ForbiddenException('Buying is not active');
     }
@@ -71,10 +112,7 @@ export class OrderService {
           },
           0,
         );
-        const deliveryPricePerKg =
-          await this.globalConfigService.getDeliveryPricePerKg();
-        totalForDeliveryPrice =
-          totalKgForDelivery * deliveryPricePerKg.deliveryPricePerKg;
+        totalForDeliveryPrice = handleDeliveryPrice(totalKgForDelivery * 1000);
       }
 
       let order: Order;
